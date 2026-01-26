@@ -13,21 +13,19 @@ import subprocess
             'adjusttext==0.7.3',
             'requests<=2.28.2',
             'sklearn==0.0']'''
-packages = ['numpy',
+packages = ['numpy<2',
             'scipy',
             'astropy',
-            'matplotlib',
+            'matplotlib<3.8',
             'requests',
-            'sklearn==0.0',
+            'scikit-learn',
             'pandas<=1.1.5',
             'adjusttext==0.7.3',
             ]
-commands = [[sys.executable, '-m', 'pip', 'install', '--force-reinstall', package] for package in packages]
 #Report python version
 print("Current Python Version:", sys.version)
 #Update PIP
 subprocess.run([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'], shell=False)
-#Install all the packages.
-for command in commands:
-    subprocess.run(command, shell=False)
+#Install all the packages at once so pip can resolve dependencies properly
+subprocess.run([sys.executable, '-m', 'pip', 'install'] + packages, shell=False)
 

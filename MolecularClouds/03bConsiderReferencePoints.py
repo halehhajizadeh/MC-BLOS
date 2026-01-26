@@ -141,31 +141,36 @@ TotalNumPoints = len(MatchedRMExtinctionData)
 # ---- Total number of points
 
 '''
-We can now determine the optimal number of reference points using the calculated BLOS values as a function of 
+We can now determine the optimal number of reference points using the calculated BLOS values as a function of
 number of candidate reference points.
  '''
-Optimal_NumRefPoints = orp.stabilityCheckAlg(TrendDataTable) #[orp.minRefRMOn(MatchedRMExtinctionData, FilteredRefPoints, 1.5)] #orp.stabilityCheckAlg(TrendDataTable) #[orp.minRefRMOff(FilteredRefPoints, 1)]
-# -------- Find the optimal number of reference points using the trend data
-# The number of reference points should be greater than 3 (minimum valu in config) and less than half the total number of points
-minStablePoints = config.minRefPoints
-maxFracPoints = config.maxFracPointNum
-Optimal_NumRefPoints_Selection = [value for value in Optimal_NumRefPoints if minStablePoints <= value <= maxFracPoints * TotalNumPoints]
-if len(Optimal_NumRefPoints_Selection) < 1:
-    messages = ["There is no optimal reference point information with the given parameters!"
-                "In the config, the minimum number of points selected by the stability trend algorithm is: {}".format(config.minRefPoints),
-                "In the config, the maxinum fraction of points selected by the stability trend algorithm is: {}.".format(config.maxFracPointNum),
-                "This corresponds to a maximum number of points: {}".format(maxFracPoints * TotalNumPoints),
-                "Please select a larger region, obtain a denser RM Catalogue, or adjust your stability trend requirements.",
-                "This analysis will fail."]
-    logging.critical(loggingDivider)
-    for message in messages:
-        logging.critical(message)
-        print(message)
-OptimalNumRefPoints_from_AllPotentialRefPoints = orp.mode(Optimal_NumRefPoints_Selection)
+OptimalNumRefPoints_from_AllPotentialRefPoints = None
+if config.UseOptRefPoints:
+    Optimal_NumRefPoints = orp.stabilityCheckAlg(TrendDataTable) #[orp.minRefRMOn(MatchedRMExtinctionData, FilteredRefPoints, 1.5)] #orp.stabilityCheckAlg(TrendDataTable) #[orp.minRefRMOff(FilteredRefPoints, 1)]
+    # -------- Find the optimal number of reference points using the trend data
+    # The number of reference points should be greater than 3 (minimum valu in config) and less than half the total number of points
+    minStablePoints = config.minRefPoints
+    maxFracPoints = config.maxFracPointNum
+    Optimal_NumRefPoints_Selection = [value for value in Optimal_NumRefPoints if minStablePoints <= value <= maxFracPoints * TotalNumPoints]
+    if len(Optimal_NumRefPoints_Selection) < 1:
+        messages = ["There is no optimal reference point information with the given parameters!"
+                    "In the config, the minimum number of points selected by the stability trend algorithm is: {}".format(config.minRefPoints),
+                    "In the config, the maxinum fraction of points selected by the stability trend algorithm is: {}.".format(config.maxFracPointNum),
+                    "This corresponds to a maximum number of points: {}".format(maxFracPoints * TotalNumPoints),
+                    "Please select a larger region, obtain a denser RM Catalogue, or adjust your stability trend requirements.",
+                    "This analysis will fail."]
+        logging.critical(loggingDivider)
+        for message in messages:
+            logging.critical(message)
+            print(message)
+    OptimalNumRefPoints_from_AllPotentialRefPoints = orp.mode(Optimal_NumRefPoints_Selection)
 # -------- Find the optimal number of reference points using the trend data
 
 # -------- Solidify reference points.
-chosenRefPoints_Num = [i for i in range(OptimalNumRefPoints_from_AllPotentialRefPoints)] if config.UseOptRefPoints else [i for i in range(len(FilteredRefPoints.index))]
+if config.UseOptRefPoints and OptimalNumRefPoints_from_AllPotentialRefPoints is not None:
+    chosenRefPoints_Num = [i for i in range(OptimalNumRefPoints_from_AllPotentialRefPoints)]
+else:
+    chosenRefPoints_Num = [i for i in range(len(FilteredRefPoints.index))]
 chosenRefPoints = FilteredRefPoints.loc[chosenRefPoints_Num].sort_values('Extinction_Value')
 # -------- Solidify reference points.
 
@@ -251,9 +256,10 @@ TrendDataTable = orp.findTrendData(RefPoints, MatchedRMExtinctionData, regionOfI
 # ---- Create a figure
 fig = orp.plotStabilityTrend(TrendDataTable)
 yLower, yUpper = plt.ylim()
-plt.vlines(OptimalNumRefPoints_from_AllPotentialRefPoints, yLower, yUpper, color='black', label='Suggested optimal '
-                                                                                                'number of reference '
-                                                                                                'points')
+if OptimalNumRefPoints_from_AllPotentialRefPoints is not None:
+    plt.vlines(OptimalNumRefPoints_from_AllPotentialRefPoints, yLower, yUpper, color='black', label='Suggested optimal '
+                                                                                                    'number of reference '
+                                                                                                    'points')
 #plt.legend(loc='center right', bbox_to_anchor=(1.1, 0.5), ncol=2, framealpha=1)
 
 plt.savefig(BLOSvsNRef_ChosenPlotFile)

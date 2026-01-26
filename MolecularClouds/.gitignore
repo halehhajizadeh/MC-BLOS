@@ -1,0 +1,24 @@
+# Output folders
+FileOutput/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+../.DS_Store
+
+# Python version
+.python-version
+
+# User's custom RM catalogs
+Data/RMCatalog/perseus_vla_rm.dat
+
+# Downloaded/external data files
+Data/RMCatalog/catalog.dat
+Data/RMCatalog/catalog.dat.gz
+Data/RMCatalog/consolidated_catalog_ver1.2.0.tsv
+Data/RMCatalog/consolidated_catalog_ver1.2.0.tsv.zip
+Data/RMCatalog/van_eck_(taylor_format).dat
