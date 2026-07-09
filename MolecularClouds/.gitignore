@@ -8,17 +8,25 @@ __pycache__/
 
 # macOS
 .DS_Store
-../.DS_Store
+**/.DS_Store
 
 # Python version
 .python-version
 
-# User's custom RM catalogs
-Data/RMCatalog/perseus_vla_rm.dat
+# Data files - FITS maps
+Data/*.fits
+Data/**/*.fits
 
-# Downloaded/external data files
-Data/RMCatalog/catalog.dat
-Data/RMCatalog/catalog.dat.gz
-Data/RMCatalog/consolidated_catalog_ver1.2.0.tsv
-Data/RMCatalog/consolidated_catalog_ver1.2.0.tsv.zip
-Data/RMCatalog/van_eck_(taylor_format).dat
+# Data files - Chemical abundance outputs
+Data/ChemicalAbundance/
+*.out
+
+# Data files - RM Catalogs
+Data/RMCatalog/*.dat
+Data/RMCatalog/*.csv
+Data/RMCatalog/*.tsv
+Data/RMCatalog/*.gz
+Data/RMCatalog/*.zip
+
+# User catalogs directory
+../Catalogs/

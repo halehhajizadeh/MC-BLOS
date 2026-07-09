@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Claude Code project instructions (optional - uncomment if you don't want to share)
+# CLAUDE.md
+
+# User data catalogs
+Catalogs/

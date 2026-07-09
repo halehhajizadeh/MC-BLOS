@@ -16,7 +16,7 @@ import LocalLibraries.PlotUtils as putil
 
 import logging
 
-from PlotTemplates import plotRefPoints, plotRefPointScript
+from LocalLibraries.PlotTemplates import plotRefPoints, plotRefPointScript
 
 # -------- LOAD THE REGION OF INTEREST --------
 cloudName = config.cloud
