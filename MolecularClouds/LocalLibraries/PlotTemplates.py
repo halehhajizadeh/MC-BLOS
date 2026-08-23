@@ -13,6 +13,7 @@ from matplotlib import pyplot as plt
 
 from . import ConversionLibrary as cl
 from . import config
+from . import PlotConfig as pc
 
 def extinctionPlot(regionOfInterest):
     '''
@@ -38,9 +39,14 @@ def heatPlot(hdu):
     '''
     wcs = WCS(hdu.header)
 
-    fig = plt.figure(figsize=(8, 8), dpi=120, facecolor='w', edgecolor='k')
+    import numpy as np
+    fig = plt.figure(figsize=(pc.FIGURE_WIDTH, pc.FIGURE_HEIGHT), dpi=pc.FIGURE_DPI, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(111, projection=wcs)
-    im = ax.imshow(hdu.data, origin='lower', cmap='BrBG', interpolation='nearest')
+    # Fixed vmin/vmax for consistent colormap across plots
+    vmin = 0
+    vmax = 15
+    im = ax.imshow(hdu.data, origin='lower', cmap=pc.HEATMAP_CMAP, interpolation=pc.HEATMAP_INTERPOLATION,
+                   vmin=vmin, vmax=vmax)
 
     return fig, ax, im
 
@@ -55,17 +61,21 @@ def equatorialCoords(ax):
     dec = ax.coords[1]
     ra.set_major_formatter('d')
     dec.set_major_formatter('d')
-    ra.set_axislabel('RA (degree)')
-    dec.set_axislabel('Dec (degree)')
+    ra.set_axislabel(pc.RA_LABEL, fontsize=pc.RA_LABEL_FONTSIZE)
+    dec.set_axislabel(pc.DEC_LABEL, fontsize=pc.DEC_LABEL_FONTSIZE)
 
-    dec.set_ticks(number=10)
-    ra.set_ticks(number=20)
+    dec.set_ticks(number=pc.DEC_NUM_TICKS)
+    ra.set_ticks(number=pc.RA_NUM_TICKS)
     ra.display_minor_ticks(True)
     dec.display_minor_ticks(True)
-    ra.set_minor_frequency(10)
+    ra.set_minor_frequency(pc.RA_MINOR_FREQUENCY)
 
-    ra.grid(color='black', alpha=0.5, linestyle='solid')
-    dec.grid(color='black', alpha=0.5, linestyle='solid')
+    # Set tick label sizes
+    ra.set_ticklabel(size=pc.RA_TICK_FONTSIZE)
+    dec.set_ticklabel(size=pc.DEC_TICK_FONTSIZE)
+
+    ra.grid(color=pc.RA_GRID_COLOR, alpha=pc.RA_GRID_ALPHA, linestyle=pc.RA_GRID_LINESTYLE)
+    dec.grid(color=pc.DEC_GRID_COLOR, alpha=pc.DEC_GRID_ALPHA, linestyle=pc.DEC_GRID_LINESTYLE)
     # ---- Style the main axes and their grid.
     return ax
 
@@ -78,13 +88,23 @@ def overlayCoords(ax):
     # ---- Style the overlay and its grid
     overlay = ax.get_coords_overlay('galactic')
 
-    overlay[0].set_axislabel('Longitude')
-    overlay[1].set_axislabel('Latitude')
+    overlay[0].set_axislabel(pc.GAL_LON_LABEL, fontsize=pc.GAL_LABEL_FONTSIZE, color=pc.GAL_TICK_COLOR)
+    overlay[1].set_axislabel(pc.GAL_LAT_LABEL, fontsize=pc.GAL_LABEL_FONTSIZE, minpad=-1)
 
-    overlay[0].set_ticks(color='grey', number=20)
-    overlay[1].set_ticks(color='grey', number=20)
+    # Manually position the Latitude label - adjust y-value to move it vertically
+    ax.text(1.02, 0.55, pc.GAL_LAT_LABEL, fontsize=pc.GAL_LABEL_FONTSIZE, color=pc.GAL_TICK_COLOR,
+            rotation=270, transform=ax.transAxes,
+            verticalalignment='center', horizontalalignment='left')
+    overlay[1].set_axislabel('')  # Hide the default label
 
-    overlay.grid(color='grey', linestyle='solid', alpha=0.7)
+    overlay[0].set_ticks(color=pc.GAL_TICK_COLOR, number=pc.GAL_NUM_LON_TICKS)
+    overlay[1].set_ticks(color=pc.GAL_TICK_COLOR, number=pc.GAL_NUM_LAT_TICKS)
+
+    # Set tick label properties
+    overlay[0].set_ticklabel(size=pc.GAL_TICK_FONTSIZE, color=pc.GAL_TICK_COLOR)
+    overlay[1].set_ticklabel(size=pc.GAL_TICK_FONTSIZE, color=pc.GAL_TICK_COLOR)
+
+    overlay.grid(color=pc.GAL_GRID_COLOR, linestyle=pc.GAL_GRID_LINESTYLE, alpha=pc.GAL_GRID_ALPHA)
     # ---- Style the overlay and its grid.
     return ax
 
@@ -96,14 +116,28 @@ def colourbar(regionOfInterest, im):
     :param im: The matplotlib image object to make a colour bar for.
     :return: cb - the pointer to the colourbar object.
     '''
+    from matplotlib.ticker import AutoLocator
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
     cb = None
+    # Get the axes from the image
+    ax = im.axes
+
     # ---- Style the colour bar
     if regionOfInterest.fitsDataType == 'HydrogenColumnDensity':
-        cb = plt.colorbar(im, ticklocation='right', fraction=0.02, pad=0.145, format='%.0e')
-        cb.ax.set_title('Hydrogen Column Density', linespacing=0.5, fontsize=12)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=pc.H_PAD, axes_class=plt.Axes)
+        cb = plt.colorbar(im, cax=cax, format='%.0e', shrink=pc.H_SHRINK, fraction=pc.H_FRACTION)
+        cb.set_label(pc.H_LABEL, rotation=270, labelpad=pc.H_LABELPAD, fontsize=pc.H_LABEL_FONTSIZE)
+        cb.ax.tick_params(labelsize=pc.H_TICK_FONTSIZE)
     elif regionOfInterest.fitsDataType == 'VisualExtinction':
-        cb = plt.colorbar(im, ticklocation='right', fraction=0.02, pad=0.145)
-        cb.ax.set_title(' A' + r'$_V$', linespacing=0.5, fontsize=12)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=pc.AV_PAD, axes_class=plt.Axes)
+        cb = plt.colorbar(im, cax=cax, shrink=pc.AV_SHRINK, fraction=pc.AV_FRACTION)
+        cb.set_label(pc.AV_LABEL, rotation=270, labelpad=pc.AV_LABELPAD, fontsize=pc.AV_LABEL_FONTSIZE)
+        cb.ax.tick_params(labelsize=pc.AV_TICK_FONTSIZE, width=pc.AV_TICK_WIDTH, length=pc.AV_TICK_LENGTH)
+        # Use automatic locator for proper tick values
+        cb.ax.yaxis.set_major_locator(AutoLocator())
     # ---- Style the colour bar.
     return cb
 
@@ -149,13 +183,15 @@ def labelPoints(ax, labels, xCoords, yCoords, size = 9, color = 'w', textFix = T
     # ---- Annotate the chosen reference points
 
 
-def plotRefPoints(refPoints, regionOfInterest, title, fontsize=12, pad=50, marker='o', facecolor='green', linewidth=.5, edgecolors='black', s=50, textFix=True):
+def plotRefPoints(refPoints, regionOfInterest, title, fontsize=12, pad=50, marker='o', facecolor='green', linewidth=.5, edgecolors='black', s=50, textFix=True, show_title=True, show_labels=True):
     '''
     Given a list of reference points and the data of the region in question,
     generates a basic plot of the region with the locations of the reference points.
     :param refPoints: A pandas datatable containing the reference point information.
     :param regionOfInterest: RegionOfInterest class corresponding to a given region of interest.
     :param title: Title of the plot.
+    :param show_title: Whether to show the title (default True).
+    :param show_labels: Whether to show ID labels (default True).
     :return: fig, ax - the figure and plot axes of the plot.
     '''
     # -------- PREPARE TO PLOT REFERENCE POINTS --------
@@ -170,16 +206,18 @@ def plotRefPoints(refPoints, regionOfInterest, title, fontsize=12, pad=50, marke
 
     # -------- CREATE A FIGURE - ALL REF POINTS MAP --------
     fig, ax = extinctionPlot(regionOfInterest)
-    plt.title(title, fontsize=fontsize, pad=pad)
+    if show_title:
+        plt.title(title, fontsize=fontsize, pad=pad)
     ax.scatter(x, y, marker=marker, facecolor=facecolor, linewidth=linewidth, edgecolors=edgecolors, s=s)
     # ---- Annotate the chosen reference points
-    labelPoints(ax, labels, x, y, textFix=textFix)
+    if show_labels:
+        labelPoints(ax, labels, x, y, textFix=textFix)
     # ---- Annotate the chosen reference points
     # -------- CREATE A FIGURE - ALL REF POINTS MAP. --------
     return fig, ax
 
 
-def plotRefPointScript(title, saveFigurePath, refPoints, regionOfInterest, contourThreshold = math.nan, textFix=True):
+def plotRefPointScript(title, saveFigurePath, refPoints, regionOfInterest, contourThreshold = math.nan, textFix=True, show_title=True, show_labels=True):
     '''
     Wrapper function for commonly duplicated code in creating a reference point plot.
     :param titleFragment: Part of the title. String.
@@ -188,17 +226,19 @@ def plotRefPointScript(title, saveFigurePath, refPoints, regionOfInterest, conto
     :param refPoints: Input reference point data to be mapped on the image.
     :param hdu: HDU image file of the region.
     :param regionOfInterest: Region information in a RegionOfInterest class.
+    :param show_title: Whether to show the title (default True).
+    :param show_labels: Whether to show ID labels (default True).
     :return: Nothing.
     '''
     # -------- PREPARE TO PLOT REFERENCE POINTS --------
 
-    fig, ax = plotRefPoints(refPoints, regionOfInterest, title, textFix=textFix)
+    fig, ax = plotRefPoints(refPoints, regionOfInterest, title, textFix=textFix, show_title=show_title, show_labels=show_labels)
     if np.isfinite(contourThreshold):
         mask = regionOfInterest.hdu.data > contourThreshold
         ax.contour(mask, levels=1, colors='black', linewidths=0.5)
         ax.contourf(mask, levels=1, alpha = 0.25, cmap = 'Greys')
     # ---- Display or save the figure
-    plt.savefig(saveFigurePath)
+    plt.savefig(saveFigurePath, bbox_inches='tight')
     plt.close()
     # ---- Display or save the figure.
 
