@@ -1,1 +1,0 @@
-root - INFO - 2026-08-22 23:35:44,263 - Saving calculated magnetic field values in the folder: /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/DensitySensitivity

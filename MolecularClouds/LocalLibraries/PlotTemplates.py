@@ -11,8 +11,8 @@ import numpy as np
 from astropy.wcs import WCS
 from matplotlib import pyplot as plt
 
-import ConversionLibrary as cl
-import config
+from . import ConversionLibrary as cl
+from . import config
 
 def extinctionPlot(regionOfInterest):
     '''

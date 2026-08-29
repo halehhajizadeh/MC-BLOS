@@ -1,1 +1,0 @@
-root - INFO - 2026-08-22 23:35:56,480 - Saving temp sensitivity figure to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/BTemperatureSensitivity.png

@@ -1,3 +1,0 @@
-root - INFO - 2026-08-22 23:32:57,122 - =====================================================================================================
-root - INFO - 2026-08-22 23:32:57,122 - Saving the map: All RM Points in the Region with ID to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/AllRMPtsInRegion.png
-root - INFO - 2026-08-22 23:32:57,122 - Saving RM Matching figure to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/AllRMPtsInRegion.png

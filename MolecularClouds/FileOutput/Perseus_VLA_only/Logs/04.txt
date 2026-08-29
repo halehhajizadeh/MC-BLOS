@@ -1,2 +1,0 @@
-root - INFO - 2026-08-21 23:26:07,995 - Saving calculated magnetic field values to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/FinalData/BLOSPoints.csv
-root - INFO - 2026-08-21 23:26:09,982 - Saving BLOS figure to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/BLOSPointMap.png
