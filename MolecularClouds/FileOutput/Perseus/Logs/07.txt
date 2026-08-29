@@ -1,0 +1,1 @@
+root - INFO - 2026-08-25 19:17:29,210 - Saving calculated magnetic field values and associated uncertainties to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/FinalData/FinalBLOSResults.csv

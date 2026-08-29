@@ -1,0 +1,20 @@
+root - INFO - 2026-08-21 23:04:54,707 - =====================================================================================================
+root - INFO - 2026-08-21 23:04:54,707 - Saving the map: All Potential Reference Points to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/AllPotRefPts.png
+root - INFO - 2026-08-21 23:04:56,126 - =====================================================================================================
+root - INFO - 2026-08-21 23:04:56,126 - Saving the map: Near-High Extinction Rejected Points to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/Filter_NearHighExt.png
+root - INFO - 2026-08-21 23:04:57,498 - =====================================================================================================
+root - INFO - 2026-08-21 23:04:57,498 - Saving the map: Far from High Extinction Rejected Points to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/Filter_FarHighExt.png
+root - INFO - 2026-08-21 23:04:58,862 - =====================================================================================================
+root - INFO - 2026-08-21 23:04:58,862 - Saving the map: Anomalous RM Rejected Points to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/Filter_AnomRM.png
+root - INFO - 2026-08-21 23:05:00,252 - =====================================================================================================
+root - INFO - 2026-08-21 23:05:00,252 - Saving the map: All Rejected Points to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/Filter_AllRej.png
+root - INFO - 2026-08-21 23:05:04,818 - =====================================================================================================
+root - INFO - 2026-08-21 23:05:04,818 - Saving the map: All Remaining Points to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/Filter_AllRemaining.png
+root - INFO - 2026-08-21 23:05:07,958 - =====================================================================================================
+root - INFO - 2026-08-21 23:05:07,959 - Saving the map: All Chosen Points to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/ChosenRefPoints.png
+root - INFO - 2026-08-21 23:05:09,574 - =====================================================================================================
+root - INFO - 2026-08-21 23:05:09,574 - Saving the map: Extinction Threshold Plot to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/ExtRefPts.png
+root - INFO - 2026-08-21 23:05:13,411 - =====================================================================================================
+root - INFO - 2026-08-21 23:05:13,411 - Saving the map: Quadrant Division Plot to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/QuadrantDivisionPlot.png
+root - INFO - 2026-08-21 23:05:17,262 - =====================================================================================================
+root - INFO - 2026-08-21 23:05:17,262 - Saving the map: All Remaining and Rejected Reference to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/AllPotRefPointCategorized.png

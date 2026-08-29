@@ -1,0 +1,78 @@
+root - INFO - 2026-08-28 22:30:01,470 - =====================================================================================================
+root - INFO - 2026-08-28 22:30:01,470 - Potential reference points with a matched extinction value less than the extinction threshold set in the starting settings configuration are considered candidates.
+root - INFO - 2026-08-28 22:30:01,470 - 	-For clouds that appear near the disk and towards the galactic center, an appropriate threshold value is 1.75.
+root - INFO - 2026-08-28 22:30:01,470 - 	-For clouds that appear near the disk and away from the galactic center, an appropriate threshold value is 1.5.
+root - INFO - 2026-08-28 22:30:01,470 - 	-For clouds that appear off the disk, an appropriate threshold value is 1.0.
+root - INFO - 2026-08-28 22:30:01,470 - Perseus's absolute calculated latitude is: 20.555788391153435
+root - INFO - 2026-08-28 22:30:01,470 - The selected threshold latitude (from the starting settings config) is: 15.0
+root - INFO - 2026-08-28 22:30:01,470 - Given this information, the threshold extinction has been set to the suggested 1.0
+root - INFO - 2026-08-28 22:30:01,470 - This info has been saved to: /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/IntermediateData/RegionThresholdData.csv
+root - INFO - 2026-08-28 22:30:01,491 - =====================================================================================================
+root - INFO - 2026-08-28 22:30:01,491 - Based on the threshold extinction of 1.0, a total of 18 potential reference points were found.
+root - INFO - 2026-08-28 22:30:01,491 - The IDs of the selected points are: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+root - INFO - 2026-08-28 22:30:01,491 - The following are all the potential reference points: 
+     ID#  Extinction_Index_x  ...  Max_Extinction_dec  Extinction_Observed
+0     8                1022  ...           30.876634                 True
+1   185                 901  ...           29.902034                 True
+2     1                1032  ...           31.399886                 True
+3   199                 881  ...           29.662578                 True
+4   186                 900  ...           30.078859                 True
+5   198                 880  ...           30.049241                 True
+6   197                 880  ...           30.049241                 True
+7    27                1005  ...           30.069763                 True
+8   132                 939  ...           30.149745                 True
+9    96                 967  ...           29.298502                 True
+10   68                 990  ...           29.213756                 True
+11  188                 896  ...           30.448398                 True
+12    4                1020  ...           31.959262                 True
+13   70                 989  ...           29.092683                 True
+14   17                1002  ...           32.164494                 True
+15  170                 912  ...           29.812420                 True
+16   18                1016  ...           29.709535                 True
+17    5                1018  ...           31.753451                 True
+
+[18 rows x 18 columns]
+root - INFO - 2026-08-28 22:30:01,503 - =====================================================================================================
+root - INFO - 2026-08-28 22:30:01,503 - We will now check if any of the potential reference points are near a region of high extinction.
+root - INFO - 2026-08-28 22:30:01,503 - 	-A close region around the point has been defined to the configuration-selected 20 pixels
+root - INFO - 2026-08-28 22:30:01,503 - 	-A far region around the point has been defined to the configuration-selected 280 pixels
+root - INFO - 2026-08-28 22:30:01,503 - 	-A region of high extinction has been defined to the configuration-selected Av=5.0
+root - INFO - 2026-08-28 22:30:01,503 - The potential reference point(s) [8, 9, 16, 17] are near a region of high extinction
+root - INFO - 2026-08-28 22:30:01,503 - The potential reference point(s) [] are far from a region of high extinction
+root - INFO - 2026-08-28 22:30:01,503 - As per configuration settings, near points will be removed: True
+root - INFO - 2026-08-28 22:30:01,503 - As per configuration settings, far points will be removed: False
+root - INFO - 2026-08-28 22:30:01,503 - As such, the remaining points by their IDs are: 
+ [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 17]
+root - INFO - 2026-08-28 22:30:01,503 - Near High Extinction Rejected Points data was saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/IntermediateData/NearHighExtRej.csv
+root - INFO - 2026-08-28 22:30:01,503 - Far from High Extinction Rejected Points data was saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/IntermediateData/FarHighExtRej.csv
+root - INFO - 2026-08-28 22:30:01,506 - =====================================================================================================
+root - INFO - 2026-08-28 22:30:01,506 - We will now check if any of the potential reference points have anomalous rotation measure values.
+root - INFO - 2026-08-28 22:30:01,506 - 	-Anomalous rotation measure values have been defined in the starting configuration to be greater or less than 5.0 standard deviations from the mean (rm < -74.84rad/m^2 or rm > 130.64rad/m^2)
+root - INFO - 2026-08-28 22:30:01,506 - As per configuration settings, anomalous points will be removed: True
+root - INFO - 2026-08-28 22:30:01,506 - The potential reference point(s) [] have anomalous rotation measure values
+root - INFO - 2026-08-28 22:30:01,506 - As such, the remaining points by their IDs are: 
+ [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 17]
+root - INFO - 2026-08-28 22:30:01,506 - Anomalous Rejected Points data was saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/IntermediateData/AnomRej.csv
+root - INFO - 2026-08-28 22:30:01,508 - Rejected Reference Points data was saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/IntermediateData/Rejected.csv
+root - INFO - 2026-08-28 22:30:01,510 - =====================================================================================================
+root - INFO - 2026-08-28 22:30:01,510 - The Remaining Reference Points will be:
+root - INFO - 2026-08-28 22:30:01,510 - [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 17]
+root - INFO - 2026-08-28 22:30:01,510 - The Remaining data is thus:
+root - INFO - 2026-08-28 22:30:01,510 -     index  ID#  ...  Max_Extinction_dec  Extinction_Observed
+0       0    8  ...           30.876634                 True
+1       1  185  ...           29.902034                 True
+2       2    1  ...           31.399886                 True
+3       3  199  ...           29.662578                 True
+4       4  186  ...           30.078859                 True
+5       5  198  ...           30.049241                 True
+6       6  197  ...           30.049241                 True
+7       9   96  ...           29.298502                 True
+8      10   68  ...           29.213756                 True
+9      11  188  ...           30.448398                 True
+10     12    4  ...           31.959262                 True
+11     13   70  ...           29.092683                 True
+12     14   17  ...           32.164494                 True
+13     17    5  ...           31.753451                 True
+
+[14 rows x 19 columns]
+root - INFO - 2026-08-28 22:30:01,524 - Remaining data was saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/IntermediateData/FilteredPotRefPoints.csv

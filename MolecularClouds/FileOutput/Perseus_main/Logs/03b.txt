@@ -1,0 +1,43 @@
+root - INFO - 2026-08-13 23:04:06,763 - =====================================================================================================
+root - INFO - 2026-08-13 23:04:06,763 - The filtered reference points, sorted by quadrant, are:
+root - INFO - 2026-08-13 23:04:06,763 - Q1: []
+root - INFO - 2026-08-13 23:04:06,763 - Q2: [0, 2, 10, 12, 13]
+root - INFO - 2026-08-13 23:04:06,763 - Q3: []
+root - INFO - 2026-08-13 23:04:06,763 - Q4: [1, 3, 4, 5, 6, 7, 8, 9, 11]
+root - INFO - 2026-08-13 23:04:06,763 - As defined in the starting configuration, a quadrant does not have enough points sampled if there are less than 1 points in the quadrant chosen.
+root - INFO - 2026-08-13 23:04:06,763 - 2 quadrants have less than 1 reference points after filtering!
+root - INFO - 2026-08-13 23:04:06,763 - If 1 or more quadrants have insufficient points sampled at this stage,
+root - INFO - 2026-08-13 23:04:06,763 - consider raising your extinction threshold in your start settings configuration and trying again!
+root - INFO - 2026-08-13 23:04:06,763 - The lines which divide the cloud into quadrants have been saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/IntermediateData/QuadrantDivisionData.csv.
+root - INFO - 2026-08-13 23:04:13,224 - =====================================================================================================
+root - INFO - 2026-08-13 23:04:13,224 - By analyzing the stability of calculated BLOS values as a function of number of reference points from 1 to the total number of reference points (14):
+root - INFO - 2026-08-13 23:04:13,224 - Given this information, the recommended reference points are [1, 2, 3, 4, 5, 6, 7, 8].
+root - INFO - 2026-08-13 23:04:13,224 - Next, minimum quadrant sampling is accounted for.
+root - INFO - 2026-08-13 23:04:13,224 - The chosen reference points, sorted by quadrant, are:
+root - INFO - 2026-08-13 23:04:13,224 - Q1: []
+root - INFO - 2026-08-13 23:04:13,224 - Q2: [0, 2]
+root - INFO - 2026-08-13 23:04:13,224 - Q3: []
+root - INFO - 2026-08-13 23:04:13,224 - Q4: [1, 3, 4, 5, 6, 7]
+root - INFO - 2026-08-13 23:04:13,224 - Additional points are taken until quadrants which could meet the minimum sampling criteria set in the configuration start settings,
+root - INFO - 2026-08-13 23:04:13,224 - Given this information, the recommended reference points are [1, 2, 3, 4, 5, 6, 7, 8].
+root - INFO - 2026-08-13 23:04:13,224 - Given this information, the remaining table is 
+    Unnamed: 0  index  ...  Max_Extinction_dec  Extinction_Observed
+0           0      0  ...           30.876634                 True
+1           1      1  ...           29.902034                 True
+2           2      2  ...           31.399886                 True
+3           3      3  ...           29.662578                 True
+4           4      4  ...           30.078859                 True
+5           5      5  ...           30.049241                 True
+6           6      6  ...           30.049241                 True
+7           7      9  ...           29.298502                 True
+
+[8 rows x 20 columns].
+root - INFO - 2026-08-13 23:04:13,224 - Please review the BLOS trend stability plot at /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/BLOS_vs_NRef_AllPotentialRefPoints.png.
+root - INFO - 2026-08-13 23:04:14,483 - =====================================================================================================
+root - INFO - 2026-08-13 23:04:14,483 - Saving the BLOS stability reassessment figure to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/Plots/BLOS_vs_NRef_ChosenRefPoints.png
+root - INFO - 2026-08-13 23:04:14,485 - =====================================================================================================
+root - INFO - 2026-08-13 23:04:14,485 - The chosen point weighting scheme is: Quadrant
+root - INFO - 2026-08-13 23:04:14,488 - =====================================================================================================
+root - INFO - 2026-08-13 23:04:14,488 - Reference values were saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/FinalData/ReferenceData.csv
+root - INFO - 2026-08-13 23:04:14,488 - =====================================================================================================
+root - INFO - 2026-08-13 23:04:14,488 - Chosen reference points were saved to /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput/Perseus/FinalData/SelectedRefPoints.csv

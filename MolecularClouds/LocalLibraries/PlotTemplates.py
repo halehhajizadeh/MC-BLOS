@@ -38,9 +38,13 @@ def heatPlot(hdu):
     '''
     wcs = WCS(hdu.header)
 
-    fig = plt.figure(figsize=(8, 8), dpi=120, facecolor='w', edgecolor='k')
+    fig = plt.figure(figsize=(10, 10), dpi=300, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(111, projection=wcs)
-    im = ax.imshow(hdu.data, origin='lower', cmap='BrBG', interpolation='nearest')
+    # Fixed vmin/vmax for consistent colormap across plots
+    vmin = 0
+    vmax = 15
+    im = ax.imshow(hdu.data, origin='lower', cmap='BrBG', interpolation='nearest',
+                   vmin=vmin, vmax=vmax)
 
     return fig, ax, im
 
@@ -55,17 +59,26 @@ def equatorialCoords(ax):
     dec = ax.coords[1]
     ra.set_major_formatter('d')
     dec.set_major_formatter('d')
-    ra.set_axislabel('RA (degree)')
-    dec.set_axislabel('Dec (degree)')
+    ra.set_axislabel('RA (degree)', fontsize=16)
+    dec.set_axislabel('Dec (degree)', fontsize=16)
 
-    dec.set_ticks(number=10)
-    ra.set_ticks(number=20)
+    dec.set_ticks(number=8)
+    ra.set_ticks(number=12)
     ra.display_minor_ticks(True)
     dec.display_minor_ticks(True)
-    ra.set_minor_frequency(10)
+    ra.set_minor_frequency(5)
 
-    ra.grid(color='black', alpha=0.5, linestyle='solid')
-    dec.grid(color='black', alpha=0.5, linestyle='solid')
+    # Set tick label sizes and positions
+    ra.set_ticklabel(size=14)
+    dec.set_ticklabel(size=14)
+
+    # Force Dec labels and ticks to appear ONLY on left side
+    dec.set_ticks_position('l')
+    dec.set_ticklabel_position('l')
+    dec.set_axislabel_position('l')
+
+    ra.grid(color='white', alpha=0.5, linestyle='solid')
+    dec.grid(color='white', alpha=0.5, linestyle='solid')
     # ---- Style the main axes and their grid.
     return ax
 
@@ -78,13 +91,23 @@ def overlayCoords(ax):
     # ---- Style the overlay and its grid
     overlay = ax.get_coords_overlay('galactic')
 
-    overlay[0].set_axislabel('Longitude')
-    overlay[1].set_axislabel('Latitude')
+    overlay[0].set_axislabel('Longitude', fontsize=14, color='grey')
+    overlay[1].set_axislabel('Latitude', fontsize=14, minpad=-1)
 
-    overlay[0].set_ticks(color='grey', number=20)
-    overlay[1].set_ticks(color='grey', number=20)
+    # Manually position the Latitude label - positioned in gap between plot and colorbar
+    ax.text(1.02, 0.60, 'Latitude', fontsize=14, color='grey',
+            rotation=270, transform=ax.transAxes,
+            verticalalignment='center', horizontalalignment='left')
+    overlay[1].set_axislabel('')  # Hide the default label
 
-    overlay.grid(color='grey', linestyle='solid', alpha=0.7)
+    overlay[0].set_ticks(color='grey', number=12)
+    overlay[1].set_ticks(color='grey', number=8)
+
+    # Set tick label properties
+    overlay[0].set_ticklabel(size=12, color='grey')
+    overlay[1].set_ticklabel(size=12, color='grey')
+
+    overlay.grid(color='grey', linestyle='dashed', alpha=0.5)
     # ---- Style the overlay and its grid.
     return ax
 
@@ -96,14 +119,28 @@ def colourbar(regionOfInterest, im):
     :param im: The matplotlib image object to make a colour bar for.
     :return: cb - the pointer to the colourbar object.
     '''
+    from matplotlib.ticker import AutoLocator
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
     cb = None
+    # Get the axes from the image
+    ax = im.axes
+
     # ---- Style the colour bar
     if regionOfInterest.fitsDataType == 'HydrogenColumnDensity':
-        cb = plt.colorbar(im, ticklocation='right', fraction=0.02, pad=0.145, format='%.0e')
-        cb.ax.set_title('Hydrogen Column Density', linespacing=0.5, fontsize=12)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.48, axes_class=plt.Axes)
+        cb = plt.colorbar(im, cax=cax, format='%.0e')
+        cb.set_label('Hydrogen Column Density', rotation=270, labelpad=25, fontsize=14)
+        cb.ax.tick_params(labelsize=12, width=1.2, length=5)
     elif regionOfInterest.fitsDataType == 'VisualExtinction':
-        cb = plt.colorbar(im, ticklocation='right', fraction=0.02, pad=0.145)
-        cb.ax.set_title(' A' + r'$_V$', linespacing=0.5, fontsize=12)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.48, axes_class=plt.Axes)
+        cb = plt.colorbar(im, cax=cax)
+        cb.set_label('$A_V$', rotation=270, labelpad=25, fontsize=14)
+        cb.ax.tick_params(labelsize=12, width=1.2, length=5)
+        # Use automatic locator for proper tick values
+        cb.ax.yaxis.set_major_locator(AutoLocator())
     # ---- Style the colour bar.
     return cb
 
@@ -198,7 +235,7 @@ def plotRefPointScript(title, saveFigurePath, refPoints, regionOfInterest, conto
         ax.contour(mask, levels=1, colors='black', linewidths=0.5)
         ax.contourf(mask, levels=1, alpha = 0.25, cmap = 'Greys')
     # ---- Display or save the figure
-    plt.savefig(saveFigurePath)
+    plt.savefig(saveFigurePath, bbox_inches='tight')
     plt.close()
     # ---- Display or save the figure.
 
