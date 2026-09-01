@@ -1,8 +1,0 @@
-root - INFO - 2026-08-28 23:43:55,703 - Folder Perseus with sub-folders:
-root - INFO - 2026-08-28 23:43:55,703 - 	Plots
-root - INFO - 2026-08-28 23:43:55,703 - 	Logs
-root - INFO - 2026-08-28 23:43:55,703 - 	DensitySensitivity
-root - INFO - 2026-08-28 23:43:55,703 - 	TemperatureSensitivity
-root - INFO - 2026-08-28 23:43:55,703 - 	IntermediateData
-root - INFO - 2026-08-28 23:43:55,703 - 	FinalData
-root - INFO - 2026-08-28 23:43:55,703 - Created in /Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput

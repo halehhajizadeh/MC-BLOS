@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+*/.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated Output Files
+FileOutput/*/FinalData/*.csv
+FileOutput/*/IntermediateData/*.csv
+FileOutput/*/DensitySensitivity/*.csv
+FileOutput/*/TemperatureSensitivity/*.csv
+FileOutput/*/Logs/*.txt
+FileOutput/*/Plots/*.png
+
+# Keep the directory structure
+!FileOutput/*/FinalData/.gitkeep
+!FileOutput/*/IntermediateData/.gitkeep
+!FileOutput/*/DensitySensitivity/.gitkeep
+!FileOutput/*/TemperatureSensitivity/.gitkeep
+!FileOutput/*/Logs/.gitkeep
+!FileOutput/*/Plots/.gitkeep
