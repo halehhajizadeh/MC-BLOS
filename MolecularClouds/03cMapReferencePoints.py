@@ -7,6 +7,12 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 
+# ---- Set global font style to match publication quality (serif font like Times)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'STIXGeneral', 'serif']
+plt.rcParams['mathtext.fontset'] = 'stix'
+# ---- Set global font style
+
 import LocalLibraries.ConversionLibrary as cl
 from LocalLibraries.RegionOfInterest import Region
 
@@ -125,11 +131,13 @@ if np.isfinite(extinctionThresh):
 # ---- Draw contours
 
 # ---- Display or save the figure
-plt.savefig(saveFigurePath)
+plt.savefig(saveFigurePath, bbox_inches='tight')
+pdfPath = saveFigurePath.replace('.png', '.pdf')
+plt.savefig(pdfPath, bbox_inches='tight', format='pdf')
 plt.close()
 # ---- Display or save the figure.
 # ---- Log info
-message = 'Saving the map: {} to {}'.format(title, saveFigurePath)
+message = 'Saving the map: {} to {} and {}'.format(title, saveFigurePath, pdfPath)
 logging.info(loggingDivider)
 logging.info(message)
 print(message)
@@ -156,18 +164,20 @@ fig, ax = plotRefPoints(refPoints, regionOfInterest, title, textFix=textFix)
 # ---- Plot basic plot
 
 # ---- Draw lines
-plt.plot(x, y)
-plt.plot(x, y2)
+ax.plot(x, y)
+ax.plot(x, y2)
 ax.set_xlim(int(regionOfInterest.xmin), int(regionOfInterest.xmax))
 ax.set_ylim(int(regionOfInterest.ymin), int(regionOfInterest.ymax))
 # ---- Draw lines
 
 # ---- Display or save the figure
-plt.savefig(saveFigurePath)
+plt.savefig(saveFigurePath, bbox_inches='tight')
+pdfPath = saveFigurePath.replace('.png', '.pdf')
+plt.savefig(pdfPath, bbox_inches='tight', format='pdf')
 plt.close()
 # ---- Display or save the figure.
 # ---- Log info
-message = 'Saving the map: {} to {}'.format(title, saveFigurePath)
+message = 'Saving the map: {} to {} and {}'.format(title, saveFigurePath, pdfPath)
 logging.info(loggingDivider)
 logging.info(message)
 print(message)
@@ -183,7 +193,7 @@ RejectedRefPoints = RejectedRefPoints
 
 fig, ax = pt.extinctionPlot(regionOfInterest)
 title = config.plotName_AllRefAndRejPlot
-plt.title(title, fontsize=12, pad=50)
+# plt.title(title, fontsize=12, pad=50)  # Title removed for cleaner plots
 
 # -------- PREPARE TO PLOT REFERENCE POINTS --------
 labels = list(refPoints['ID#'])
@@ -255,13 +265,16 @@ frame.set_alpha(0.4)
 # ---- Style the legend.
 
 # ---- Display or save the figure
-plt.savefig(AllRefAndRejPlotFile)
+plt.savefig(AllRefAndRejPlotFile, bbox_inches='tight')
+pdfPath = AllRefAndRejPlotFile.replace('.png', '.pdf')
+plt.savefig(pdfPath, bbox_inches='tight', format='pdf')
 plt.close()
 # ---- Display or save the figure.
 # ---- Log info
-message = 'Saving the map: {} to {}'.format(title, AllRefAndRejPlotFile)
+message = 'Saving the map: {} to {} and {}'.format(title, AllRefAndRejPlotFile, pdfPath)
 logging.info(loggingDivider)
 logging.info(message)
+print(message)
 # ---- Log info
 # -------- CREATE A FIGURE - REMAINING AND REJECTED REF POINTS MAP. --------
 #======================================================================================================================

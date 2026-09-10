@@ -90,8 +90,10 @@ else:
 fig, ax = plt.subplots(figsize=(12, 12), dpi=120, facecolor='w', edgecolor='k') #plt.figure(figsize=(12, 12), dpi=120, facecolor='w', edgecolor='k')
 
 plt.ylabel('Magnetic Field Difference (' + r'$ \mu G$)', fontsize=16)
-plt.xlabel(r'$\frac{\Delta n}{n_0} (\%)$', fontsize=16, labelpad=20)
-plt.title('B$_{LOS}$ Variation, ' + cloudName + ', T = T$_0$', fontsize=16, pad=50)
+plt.xlabel(r'$\frac{\Delta T}{T_0} (\%)$', fontsize=16, labelpad=20)
+plt.tick_params(axis='both', which='major', labelsize=14)
+# Title removed for cleaner publication plots
+# plt.title('B$_{LOS}$ Variation, ' + cloudName + ', T = T$_0$', fontsize=16, pad=50)
 
 x = np.arange(0, len(percent))
 plt.xticks(x, percent)

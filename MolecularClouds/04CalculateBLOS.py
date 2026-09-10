@@ -6,6 +6,13 @@ import math
 import pandas as pd
 
 import matplotlib.pyplot as plt
+
+# ---- Set global font style to match publication quality (serif font like Times)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'STIXGeneral', 'serif']
+plt.rcParams['mathtext.fontset'] = 'stix'
+# ---- Set global font style
+
 from LocalLibraries.RegionOfInterest import Region
 from LocalLibraries.CalculateB import CalculateB
 
@@ -73,7 +80,7 @@ BLOS = list(BLOSData['Magnetic_Field(uG)'])
 fig = plt.figure(figsize=(10, 10), dpi=300, facecolor='w', edgecolor='k')
 ax = fig.add_subplot(111, projection=regionOfInterest.wcs)
 
-plt.title(r'$\rm{B}_{LOS}$' + ' in the {} region\n\n\n'.format(cloudName), fontsize=12, linespacing=1, pad=20)
+# plt.title(r'$\rm{B}_{LOS}$' + ' in the {} region\n\n\n'.format(cloudName), fontsize=12, linespacing=1, pad=20)  # Title removed for cleaner plots
 im = plt.imshow(regionOfInterest.hdu.data, origin='lower', cmap='BrBG', interpolation='nearest',
                 vmin=0, vmax=15)
 
@@ -85,11 +92,11 @@ for i in range(len(Ra)):
     x.append(pixelRow)
     y.append(pixelColumn)
 # ---- Convert Ra and Dec of points into pixel values of the fits file.
-color, size = putil.p2RGB(BLOS, size_cap=1000, scale_factor=0.5)
-plt.scatter(x, y, s=size, facecolor=color, marker='o', linewidth=.5, edgecolors='black')
+color, size = putil.p2RGB(BLOS, size_cap=1000, scale_factor=0.5, alpha=0.7)
+plt.scatter(x, y, s=size, facecolor=color, marker='o', linewidth=0.8, edgecolors='black')
 
 # ---- Annotate the BLOS Points
-pt.labelPoints(ax, n, x, y, textFix = config.textFix)
+# pt.labelPoints(ax, n, x, y, textFix = config.textFix)  # Removed: labels clutter the plot
 # ---- Annotate the BLOS Points.
 
 # -------- PREPARE TO PLOT REF BLOS POINTS --------
@@ -112,11 +119,11 @@ for i in range(len(RefRa)):
     xRef.append(pixelRow)
     yRef.append(pixelColumn)
 # ---- Convert Ra and Dec of points into pixel values of the fits file.
-colorRef, sizeRef = putil.p2C(RefBLOS, colour=(0, 1, 0), size_cap=1000, scale_factor=0.5)
-plt.scatter(xRef, yRef, s=sizeRef, facecolor=colorRef, marker='o', linewidth=.5, edgecolors='black')
+colorRef, sizeRef = putil.p2C(RefBLOS, colour=(0, 1, 0), size_cap=1000, scale_factor=0.5, alpha=0.7)
+plt.scatter(xRef, yRef, s=sizeRef, facecolor=colorRef, marker='o', linewidth=1.5, edgecolors='darkgreen')
 
 # ---- Annotate the BLOS Points
-pt.labelPoints(ax, Refn, xRef, yRef, color = 'magenta', textFix=config.textFix)
+# pt.labelPoints(ax, Refn, xRef, yRef, color = 'magenta', textFix=config.textFix)  # Removed: labels clutter the plot
 # ---- Annotate the BLOS Points.
 
 # ---- Style the main axes and their grid
@@ -194,9 +201,9 @@ marker1 = plt.scatter([], [], s=10/2, facecolor=(1, 1, 1, 0.7), edgecolor='black
 marker2 = plt.scatter([], [], s=100/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
 marker3 = plt.scatter([], [], s=500/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
 marker4 = plt.scatter([], [], s=1000/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
-marker5 = plt.scatter([], [], s=100, facecolor=(1, 0, 0, 0.7), edgecolor='black')
-marker6 = plt.scatter([], [], s=100, facecolor=(0, 0, 1, 0.7), edgecolor='black')
-marker7 = plt.scatter([], [], s=100, facecolor=(0, 1, 0, 0.7), edgecolor='black')
+marker5 = plt.scatter([], [], s=100, facecolor=(1, 0, 0, 0.7), edgecolor='black', linewidth=0.8)
+marker6 = plt.scatter([], [], s=100, facecolor=(0, 0, 1, 0.7), edgecolor='black', linewidth=0.8)
+marker7 = plt.scatter([], [], s=100, facecolor=(0, 1, 0, 0.7), edgecolor='darkgreen', linewidth=1.5)
 legend_markers = [marker1, marker2, marker4, marker5, marker6, marker7]
 
 labels = [
@@ -208,7 +215,7 @@ labels = [
     'Off points'
     ]
 
-legend = plt.legend(handles=legend_markers, labels=labels, scatterpoints=1, ncol=2)
+legend = ax.legend(handles=legend_markers, labels=labels, scatterpoints=1, ncol=2, loc='lower left')
 
 frame = legend.get_frame()
 frame.set_facecolor('1')
@@ -216,17 +223,20 @@ frame.set_alpha(0.4)
 # ---- Style the legend.
 
 # ---- Style the textbox
-offPointsText = "RM_Off: {:+.4f} rad/m^2 \nAv_Off: {:+.4f} mag".format(fiducialRM, fiducialExtinction)
+offPointsText = r"$\mathrm{RM}_{\mathrm{Off}}$: " + "{:+.1f}".format(fiducialRM) + r" rad/m$^2$" + "\n" + r"$A_V$ Off: " + "{:+.2f}".format(fiducialExtinction) + " mag"
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-ax.text(0.02, 0.98, offPointsText, transform=ax.transAxes, fontsize=10, verticalalignment='top', bbox=props)
+ax.text(0.02, 0.98, offPointsText, transform=ax.transAxes, fontsize=12, verticalalignment='top', bbox=props)
 # ---- Style the textbox
 
 # ---- Display or save the figure
 # plt.show()
 plt.savefig(BLOSPointsPlotFile, bbox_inches='tight')
+# Also save PDF version
+BLOSPointsPlotFilePDF = BLOSPointsPlotFile.replace('.png', '.pdf')
+plt.savefig(BLOSPointsPlotFilePDF, bbox_inches='tight', format='pdf')
 plt.close()
 # ---- Display or save the figure.
-message = 'Saving BLOS figure to ' + BLOSPointsPlotFile
+message = 'Saving BLOS figure to ' + BLOSPointsPlotFile + ' and ' + BLOSPointsPlotFilePDF
 logging.info(message)
 print(message)
 # -------- CREATE A FIGURE - BLOS POINT MAP. --------

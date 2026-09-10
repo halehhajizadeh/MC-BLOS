@@ -5,6 +5,13 @@ This file maps the RMs on the extinction files to get an understanding of the ro
 of the region of interest.
 """
 import matplotlib.pyplot as plt
+
+# ---- Set global font style to match publication quality (serif font like Times)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'STIXGeneral', 'serif']
+plt.rcParams['mathtext.fontset'] = 'stix'
+# ---- Set global font style
+
 import pandas as pd
 
 from LocalLibraries.RMCatalog import RMCatalog
@@ -59,9 +66,9 @@ color, size = putil.p2RGB(RMData.targetRotationMeasures)
 #Basic extinction plot given the region of interest and image.
 fig, ax = pt.extinctionPlot(regionOfInterest)
 
-#Plot title
-plotTitle = 'Rotation Measure Data' + ' in the ' + cloudName + ' region\n'
-plt.title(plotTitle, fontsize=12, pad=50)
+# Title removed for cleaner publication plots
+# plotTitle = 'Rotation Measure Data' + ' in the ' + cloudName + ' region\n'
+# plt.title(plotTitle, fontsize=12, pad=50)
 
 #Plot the RM points on the image.
 plt.scatter(x, y, marker='o', s=size, facecolor=color, linewidth=.5, edgecolors='black')
@@ -90,12 +97,15 @@ frame.set_facecolor('1')
 frame.set_alpha(0.4)
 # ---- Style the legend.
 plt.savefig(MatchedRMExtinctPlotFile, bbox_inches='tight')
+# Also save PDF version
+pdfPath = MatchedRMExtinctPlotFile.replace('.png', '.pdf')
+plt.savefig(pdfPath, bbox_inches='tight', format='pdf')
 
-# ---- Save a plot of each matched point with ID.
-pt.plotRefPointScript(config.plotName_AllMatchedRMPtsPlot, config.MatchedRMExtinctionPlotFile, pd.read_csv(config.MatchedRMExtinctionFile, sep=config.dataSeparator), regionOfInterest, textFix=config.textFix)
-# ---- Save a plot of each matched point with ID.
+# ---- Save a plot of each matched point (without ID labels for cleaner visualization).
+pt.plotRefPointScript(config.plotName_AllMatchedRMPtsPlot, config.MatchedRMExtinctionPlotFile, pd.read_csv(config.MatchedRMExtinctionFile, sep=config.dataSeparator), regionOfInterest, textFix=config.textFix, showLabels=False)
+# ---- Save a plot of each matched point.
 
-message = 'Saving RM Matching figure to ' + MatchedRMExtinctPlotFile
+message = 'Saving RM Matching figure to ' + MatchedRMExtinctPlotFile + ' and ' + pdfPath
 print(message)
 logging.info(message)
 # -------- CREATE A FIGURE. --------

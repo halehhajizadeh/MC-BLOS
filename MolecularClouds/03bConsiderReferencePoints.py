@@ -134,6 +134,9 @@ TrendDataTable.to_csv(StabilityTrendDataTablePath, sep=config.dataSeparator)
 # ---- Plot the trend data
 fig = orp.plotStabilityTrend(TrendDataTable)
 plt.savefig(BLOSvsNRef_AllPotRefPointsPlot)
+# Also save PDF version
+pdfPath = BLOSvsNRef_AllPotRefPointsPlot.replace('.png', '.pdf')
+plt.savefig(pdfPath, bbox_inches='tight', format='pdf')
 # ---- Plot the trend data
 
 # ---- Total number of points
@@ -257,6 +260,9 @@ plt.vlines(OptimalNumRefPoints_from_AllPotentialRefPoints, yLower, yUpper, color
 #plt.legend(loc='center right', bbox_to_anchor=(1.1, 0.5), ncol=2, framealpha=1)
 
 plt.savefig(BLOSvsNRef_ChosenPlotFile)
+# Also save PDF version
+pdfPath2 = BLOSvsNRef_ChosenPlotFile.replace('.png', '.pdf')
+plt.savefig(pdfPath2, bbox_inches='tight', format='pdf')
 #plt.show()
 #plt.close()
 # ---- Create a figure

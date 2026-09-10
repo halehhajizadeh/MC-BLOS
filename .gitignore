@@ -1,0 +1,35 @@
+# Local system, environment, and editor files
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+.claude/
+.idea/
+.vscode/
+
+# Generated analysis results (keep existing empty directory placeholders)
+MolecularClouds/FileOutput*/**
+!MolecularClouds/FileOutput*/**/
+!MolecularClouds/FileOutput*/**/.gitkeep
+
+# Runtime logs and compiled manuscript files
+*.log
+*.aux
+*.bbl
+*.blg
+*.out
+!MolecularClouds/Data/ChemicalAbundance/**/*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+MolecularClouds/paper_improved.pdf
+MolecularClouds/stability_option*.pdf
+
+# Generated tables and local review notes
+MolecularClouds/blos_full_catalog_table.tex
+MolecularClouds/reference_points_table.tex
+PROJECT_NOTES.md
+
+# Local broken alias; cloud settings use perseus_combined.ini
+MolecularClouds/Data/CloudParameters/Perseus_Combined

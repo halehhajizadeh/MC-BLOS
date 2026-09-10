@@ -14,6 +14,17 @@ from matplotlib import pyplot as plt
 from . import ConversionLibrary as cl
 from . import config
 
+# ---- Set global font style to match publication quality (serif font like Times)
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'STIXGeneral', 'serif']
+plt.rcParams['mathtext.fontset'] = 'stix'  # Use STIX fonts for math (similar to Times)
+plt.rcParams['axes.labelsize'] = 16
+plt.rcParams['xtick.labelsize'] = 14
+plt.rcParams['ytick.labelsize'] = 14
+plt.rcParams['legend.fontsize'] = 12
+plt.rcParams['figure.titlesize'] = 14
+# ---- Set global font style
+
 def extinctionPlot(regionOfInterest):
     '''
     Plots the extinction plot of a given region.
@@ -186,13 +197,14 @@ def labelPoints(ax, labels, xCoords, yCoords, size = 9, color = 'w', textFix = T
     # ---- Annotate the chosen reference points
 
 
-def plotRefPoints(refPoints, regionOfInterest, title, fontsize=12, pad=50, marker='o', facecolor='green', linewidth=.5, edgecolors='black', s=50, textFix=True):
+def plotRefPoints(refPoints, regionOfInterest, title, fontsize=12, pad=50, marker='o', facecolor='green', linewidth=.5, edgecolors='black', s=50, textFix=True, showLabels=True):
     '''
     Given a list of reference points and the data of the region in question,
     generates a basic plot of the region with the locations of the reference points.
     :param refPoints: A pandas datatable containing the reference point information.
     :param regionOfInterest: RegionOfInterest class corresponding to a given region of interest.
     :param title: Title of the plot.
+    :param showLabels: Whether to show ID labels on points (default True).
     :return: fig, ax - the figure and plot axes of the plot.
     '''
     # -------- PREPARE TO PLOT REFERENCE POINTS --------
@@ -207,16 +219,17 @@ def plotRefPoints(refPoints, regionOfInterest, title, fontsize=12, pad=50, marke
 
     # -------- CREATE A FIGURE - ALL REF POINTS MAP --------
     fig, ax = extinctionPlot(regionOfInterest)
-    plt.title(title, fontsize=fontsize, pad=pad)
+    # plt.title(title, fontsize=fontsize, pad=pad)  # Title removed for cleaner plots
     ax.scatter(x, y, marker=marker, facecolor=facecolor, linewidth=linewidth, edgecolors=edgecolors, s=s)
     # ---- Annotate the chosen reference points
-    labelPoints(ax, labels, x, y, textFix=textFix)
+    if showLabels:
+        labelPoints(ax, labels, x, y, textFix=textFix)
     # ---- Annotate the chosen reference points
     # -------- CREATE A FIGURE - ALL REF POINTS MAP. --------
     return fig, ax
 
 
-def plotRefPointScript(title, saveFigurePath, refPoints, regionOfInterest, contourThreshold = math.nan, textFix=True):
+def plotRefPointScript(title, saveFigurePath, refPoints, regionOfInterest, contourThreshold = math.nan, textFix=True, showLabels=True):
     '''
     Wrapper function for commonly duplicated code in creating a reference point plot.
     :param titleFragment: Part of the title. String.
@@ -225,22 +238,26 @@ def plotRefPointScript(title, saveFigurePath, refPoints, regionOfInterest, conto
     :param refPoints: Input reference point data to be mapped on the image.
     :param hdu: HDU image file of the region.
     :param regionOfInterest: Region information in a RegionOfInterest class.
+    :param showLabels: Whether to show ID labels on points (default True).
     :return: Nothing.
     '''
     # -------- PREPARE TO PLOT REFERENCE POINTS --------
 
-    fig, ax = plotRefPoints(refPoints, regionOfInterest, title, textFix=textFix)
+    fig, ax = plotRefPoints(refPoints, regionOfInterest, title, textFix=textFix, showLabels=showLabels)
     if np.isfinite(contourThreshold):
         mask = regionOfInterest.hdu.data > contourThreshold
         ax.contour(mask, levels=1, colors='black', linewidths=0.5)
         ax.contourf(mask, levels=1, alpha = 0.25, cmap = 'Greys')
     # ---- Display or save the figure
     plt.savefig(saveFigurePath, bbox_inches='tight')
+    # Also save PDF version
+    pdfPath = saveFigurePath.replace('.png', '.pdf')
+    plt.savefig(pdfPath, bbox_inches='tight', format='pdf')
     plt.close()
     # ---- Display or save the figure.
 
     # ---- Log info
-    message = 'Saving the map: {} to {}'.format(title, saveFigurePath)
+    message = 'Saving the map: {} to {} and {}'.format(title, saveFigurePath, pdfPath)
     logging.info(config.logSectionDivider)
     logging.info(message)
     print(message)

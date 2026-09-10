@@ -99,25 +99,47 @@ def plotStabilityTrend(TrendDataTable):
     '''
     Identifiers = list(TrendDataTable.index)
     # -------- CREATE A FIGURE --------
-    fig = plt.figure(figsize=(6, 4), dpi=120, facecolor='w', edgecolor='k')
+    fig, ax = plt.subplots(figsize=(8, 5), dpi=300, facecolor='w', edgecolor='k')
 
-    plt.title('Calculated BLOS value as a function of the number of reference points \n ' + config.cloud, fontsize=12,
-              y=1.08)
-    plt.xlabel('Number of reference points')
-    plt.ylabel('Calculated BLOS value ' + r'($\mu G$)')
+    # No title for cleaner publication plots
+    ax.set_xlabel('Number of reference points', fontsize=16)
+    ax.set_ylabel(r'Calculated $B_\parallel$ ($\mu$G)', fontsize=16)
+    ax.tick_params(axis='both', which='major', labelsize=14)
 
     x = [int(col) for col in TrendDataTable.columns]
-    plt.xticks(x, list(TrendDataTable.columns))
+    ax.set_xticks(x)
+    ax.set_xticklabels(list(TrendDataTable.columns))
 
-    cmap = plt.get_cmap('terrain')
-    colors = [cmap(i) for i in np.linspace(0, 1, len(TrendDataTable.index))]
+    # Get final BLOS values to determine color (positive vs negative)
+    final_values = TrendDataTable.iloc[:, -1].values
 
-    # For each BLOS Point
+    # For each BLOS Point - use thin lines with transparency, color by final sign
     for i, number in enumerate(TrendDataTable.index):
-        plt.plot(x, list(TrendDataTable.loc[number]), '-o', label=str(Identifiers[i]), color=colors[i], markersize=3)
+        y_vals = list(TrendDataTable.loc[number])
+        final_val = y_vals[-1]
 
-    # plt.legend(loc='center right', bbox_to_anchor=(1.1, 0.5), ncol=2, framealpha=1, title='Identification Number')
+        # Color based on final BLOS value (positive=blue, negative=red)
+        if final_val > 0:
+            color = 'blue'
+        elif final_val < 0:
+            color = 'red'
+        else:
+            color = 'gray'
+
+        ax.plot(x, y_vals, '-', color=color, alpha=0.4, linewidth=0.8, markersize=2)
+
+    # Add a horizontal line at y=0 for reference
+    ax.axhline(y=0, color='black', linestyle='-', linewidth=0.5, alpha=0.5)
+
+    # Add legend for color meaning
+    from matplotlib.lines import Line2D
+    legend_elements = [Line2D([0], [0], color='blue', alpha=0.7, linewidth=1.5, label=r'Positive $B_\parallel$'),
+                       Line2D([0], [0], color='red', alpha=0.7, linewidth=1.5, label=r'Negative $B_\parallel$')]
+    ax.legend(handles=legend_elements, loc='upper right', fontsize=12)
+
+    plt.tight_layout()
     # -------- CREATE A FIGURE. --------
+    return fig
 
 def findTrendData(potentialRefPoints, ExtincRMTable, regionOfInterest):
     '''
