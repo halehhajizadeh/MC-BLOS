@@ -300,9 +300,6 @@ for message in messages:
 # Separate eligible OFF candidates before stability analysis and quadrant selection.
 _, overlapRejected = rjl.separateReferencePoints(
     AllPotentialRefPoints.loc[PotRefPoints], config.minRefSeparationArcmin)
-overlapIndexes = list(overlapRejected.index)
-RejectedReferencePoints += overlapIndexes
-PotRefPoints = [i for i in PotRefPoints if i not in overlapIndexes]
 import os
 overlapPath = os.path.join(config.CloudIntermediateDataDir, 'OverlapRej.csv')
 overlapRejected.to_csv(overlapPath, index=False, sep=config.dataSeparator)

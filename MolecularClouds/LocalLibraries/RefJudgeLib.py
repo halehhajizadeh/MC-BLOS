@@ -32,6 +32,19 @@ def separateReferencePoints(points, min_separation_arcmin):
             kept.append(i)
     return ordered.iloc[kept].copy(), ordered.iloc[rejected].copy()
 
+def selectSeparatedReferencePoints(points, number, min_separation_arcmin):
+    """Select ``number`` preferred candidates while preserving sky separation."""
+    if number < 0 or number > len(points):
+        raise ValueError('Requested reference-point count is outside the candidate range.')
+    ordered = points.sort_values(['Extinction_Value', 'RM_Err(rad/m2)', 'ID#'], kind='mergesort')
+    if number == 0 or min_separation_arcmin == 0:
+        return ordered.iloc[:number].copy()
+    kept, _ = separateReferencePoints(ordered, min_separation_arcmin)
+    if len(kept) < number:
+        raise ValueError('Only {} candidates satisfy the minimum separation of {} arcmin; '
+                         '{} are required.'.format(len(kept), min_separation_arcmin, number))
+    return kept.iloc[:number].copy()
+
 # -------- FUNCTION DEFINITION --------
 def findWeightedCenter(data, xmin = np.nan, xmax = np.nan, ymin = np.nan, ymax = np.nan, maskWeight = 2):
     """

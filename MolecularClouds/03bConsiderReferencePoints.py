@@ -168,8 +168,10 @@ OptimalNumRefPoints_from_AllPotentialRefPoints = orp.mode(Optimal_NumRefPoints_S
 # -------- Find the optimal number of reference points using the trend data
 
 # -------- Solidify reference points.
-chosenRefPoints_Num = [i for i in range(OptimalNumRefPoints_from_AllPotentialRefPoints)] if config.UseOptRefPoints else [i for i in range(len(FilteredRefPoints.index))]
-chosenRefPoints = FilteredRefPoints.loc[chosenRefPoints_Num].sort_values('Extinction_Value')
+targetRefCount = OptimalNumRefPoints_from_AllPotentialRefPoints if config.UseOptRefPoints else len(FilteredRefPoints.index)
+chosenRefPoints = rjl.selectSeparatedReferencePoints(
+    FilteredRefPoints, targetRefCount, config.minRefSeparationArcmin)
+chosenRefPoints_Num = list(chosenRefPoints.index)
 # -------- Solidify reference points.
 
 # -------- FIND OPTIMAL NUMBER OF REFERENCE POINTS --------

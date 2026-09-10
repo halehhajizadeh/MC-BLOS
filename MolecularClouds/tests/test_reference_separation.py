@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from LocalLibraries.RefJudgeLib import separateReferencePoints
+from LocalLibraries.RefJudgeLib import separateReferencePoints, selectSeparatedReferencePoints
 
 
 class ReferenceSeparationTests(unittest.TestCase):
@@ -39,6 +39,13 @@ class ReferenceSeparationTests(unittest.TestCase):
         for value in [-1., float('nan'), float('inf')]:
             with self.assertRaises(ValueError):
                 separateReferencePoints(data, value)
+
+    def test_selection_backfills_to_requested_count(self):
+        data = self.points([0., 0.01, 0.02, 1., 2.], [0.] * 5,
+                           [0.1, 0.2, 0.3, 0.4, 0.5])
+        selected = selectSeparatedReferencePoints(data, 3, 1.2)
+        self.assertEqual(len(selected), 3)
+        self.assertEqual(list(selected['ID#']), [0, 2, 3])
 
 
 if __name__ == '__main__':
