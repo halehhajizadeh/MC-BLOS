@@ -8,7 +8,8 @@ import numpy as np
 import os
 
 # Paths
-base_dir = '/Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput_ImprovedPlots/perseus'
+from LocalLibraries import config
+base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
 
 # Load data

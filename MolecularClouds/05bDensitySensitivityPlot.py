@@ -114,6 +114,7 @@ plt.legend(loc='upper center', ncol=2)
 # ---- Display or save the figure
 # plt.show()
 plt.savefig(BDensSensPlotFile)
+plt.savefig(BDensSensPlotFile.replace('.png', '.pdf'), bbox_inches='tight')
 # ---- Display or save the figure.
 message = 'Saving Density Sensitivity figure to ' + BDensSensPlotFile
 logging.info(message)

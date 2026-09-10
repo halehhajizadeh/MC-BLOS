@@ -9,6 +9,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from pathlib import Path
+from LocalLibraries import config
+from LocalLibraries.RegionOfInterest import Region
+from LocalLibraries.OptimalRefPoints import findTrendData
+from LocalLibraries.RefJudgeLib import separateReferencePoints
 
 # Set publication quality font settings
 plt.rcParams['font.family'] = 'serif'
@@ -16,11 +21,28 @@ plt.rcParams['font.serif'] = ['Times New Roman', 'DejaVu Serif', 'STIXGeneral', 
 plt.rcParams['mathtext.fontset'] = 'stix'
 
 # Load the trend data
-trend_data_path = '/Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput_ImprovedPlots/Perseus/IntermediateData/TrendDataTable.csv'
-trend_data = pd.read_csv(trend_data_path, sep='\t', index_col=0)
+trend_data_path = config.StabilityTrendDataTablePath
+matched = pd.read_csv(config.MatchedRMExtinctionFile, sep=config.dataSeparator)
+candidates = pd.read_csv(config.FilteredRefPointsFile, sep=config.dataSeparator)
+separated, _ = separateReferencePoints(candidates, config.minRefSeparationArcmin)
+separated = separated.reset_index(drop=True)
+selected = pd.read_csv(config.ChosenRefPointFile, sep=config.dataSeparator)
+if set(separated.head(len(selected))['ID#']) != set(selected['ID#']):
+    raise ValueError('Paper stability plot requires the selected references to lead the separated candidate sequence.')
+trend_data = findTrendData(separated, matched, Region(config.cloud))
+total_trends = len(trend_data)
+# Use the same finite sight lines at every N so gaps or changing samples do not
+# distort the summary bands or truncate the last columns of the figure.
+trend_data = trend_data.replace([np.inf, -np.inf], np.nan).dropna(axis=0)
+if trend_data.empty:
+    raise ValueError('No sight lines have finite fields across the reference-count sequence.')
+print(f'Paper stability summary: {len(trend_data)} sight lines valid at every N '
+      f'({total_trends - len(trend_data)} incomplete trends excluded).')
+trend_data.to_csv(Path(config.CloudIntermediateDataDir) / 'PaperStabilityTrend.csv', sep=config.dataSeparator)
 
 # Get the optimal number of reference points (N=8)
-optimal_n = 8
+optimal_n = len(pd.read_csv(config.ChosenRefPointFile, sep=config.dataSeparator))
+plots_dir = Path(config.CloudPlotsDir)
 
 x = [int(col) for col in trend_data.columns]
 
@@ -35,7 +57,7 @@ final_values = trend_data.iloc[:, -1].values
 # Select ~25 sources spanning the range of final BLOS values
 n_subset = 25
 sorted_indices = np.argsort(final_values)
-step = len(sorted_indices) // n_subset
+step = max(1, len(sorted_indices) // n_subset)
 selected_indices = sorted_indices[::step][:n_subset]
 
 # Plot selected sources
@@ -73,7 +95,8 @@ legend_elements = [
 ax1.legend(handles=legend_elements, loc='upper right', fontsize=11)
 
 plt.tight_layout()
-plt.savefig('/Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/stability_option1_subset.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(plots_dir / 'stability_option1_subset.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(plots_dir / 'stability_option1_subset.png', bbox_inches='tight')
 plt.close()
 
 print(f"  Saved: stability_option1_subset.pdf (showing {n_subset} representative sources)")
@@ -121,7 +144,10 @@ ax2.set_xticks(x)
 ax2.legend(loc='upper right', fontsize=11)
 
 plt.tight_layout()
-plt.savefig('/Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/stability_option2_summary.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(plots_dir / 'stability_option2_summary.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(plots_dir / 'stability_option2_summary.png', bbox_inches='tight')
+plt.savefig(plots_dir / 'BLOS_stability_trend.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(plots_dir / 'BLOS_stability_trend.png', bbox_inches='tight')
 plt.close()
 
 print(f"  Saved: stability_option2_summary.pdf (median + percentile bands)")

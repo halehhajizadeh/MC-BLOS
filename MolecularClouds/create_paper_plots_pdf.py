@@ -29,7 +29,8 @@ plt.rcParams.update({
 })
 
 # Paths
-base_dir = '/Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput_ImprovedPlots/perseus'
+from LocalLibraries import config
+base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
 plots_dir = os.path.join(base_dir, 'Plots')
 
@@ -69,6 +70,7 @@ ax.legend(loc='upper right')
 ax.set_xlim(-1000, 900)
 plt.tight_layout()
 plt.savefig(os.path.join(plots_dir, 'BLOS_histogram.pdf'), format='pdf')
+plt.savefig(os.path.join(plots_dir, 'BLOS_histogram.png'))
 plt.close()
 
 # 2. BLOS vs Av
@@ -91,6 +93,7 @@ ax.legend(loc='upper right')
 ax.set_xlim(0, 16)
 plt.tight_layout()
 plt.savefig(os.path.join(plots_dir, 'BLOS_vs_Av.pdf'), format='pdf')
+plt.savefig(os.path.join(plots_dir, 'BLOS_vs_Av.png'))
 plt.close()
 
 # 3. RM observed vs cloud RM
@@ -117,6 +120,7 @@ ax.set_ylabel(r'Cloud RM (rad m$^{-2}$)')
 ax.legend(loc='upper left')
 plt.tight_layout()
 plt.savefig(os.path.join(plots_dir, 'RM_observed_vs_cloud.pdf'), format='pdf')
+plt.savefig(os.path.join(plots_dir, 'RM_observed_vs_cloud.png'))
 plt.close()
 
 # 4. |BLOS| vs Av (log scale)
@@ -134,6 +138,7 @@ ax.set_xlim(0, 16)
 ax.set_ylim(1, 2000)
 plt.tight_layout()
 plt.savefig(os.path.join(plots_dir, 'BLOS_abs_vs_Av_log.pdf'), format='pdf')
+plt.savefig(os.path.join(plots_dir, 'BLOS_abs_vs_Av_log.png'))
 plt.close()
 
 # 5. Spatial distribution
@@ -158,6 +163,7 @@ ax.legend(loc='upper right')
 ax.invert_xaxis()  # RA increases to the left
 plt.tight_layout()
 plt.savefig(os.path.join(plots_dir, 'BLOS_spatial_distribution.pdf'), format='pdf')
+plt.savefig(os.path.join(plots_dir, 'BLOS_spatial_distribution.png'))
 plt.close()
 
 print("\nAll PDF plots created successfully!")

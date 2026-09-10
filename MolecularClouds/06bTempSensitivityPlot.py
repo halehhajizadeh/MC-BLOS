@@ -114,6 +114,7 @@ plt.legend(loc='upper center', ncol=2)
 # ---- Display or save the figure
 # plt.show()
 plt.savefig(BTempSensPlot)
+plt.savefig(BTempSensPlot.replace('.png', '.pdf'), bbox_inches='tight')
 # ---- Display or save the figure.
 message = 'Saving temp sensitivity figure to ' + BTempSensPlot
 logging.info(message)

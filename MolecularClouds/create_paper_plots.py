@@ -22,7 +22,8 @@ rcParams['savefig.dpi'] = 300
 rcParams['text.usetex'] = False
 
 # Paths
-base_dir = '/Users/halehhajizadeh/Desktop/MC-BLOS/MolecularClouds/FileOutput_ImprovedPlots/perseus'
+from LocalLibraries import config
+base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
 plots_dir = os.path.join(base_dir, 'Plots')
 
@@ -44,13 +45,16 @@ lower_err = final_results['TotalLowerBUncertainty'].values
 
 # Reference values
 rm_ref = ref_data['Reference RM'].values[0]
-rm_ref_std = ref_data['Reference RM Std'].values[0]
+rm_ref_sem = ref_data['Reference RM Std'].values[0]
+rm_ref_std = selected_ref['Rotation_Measure(rad/m2)'].std(ddof=1)
+n_ref = len(selected_ref)
+n_matched = len(pd.read_csv(config.MatchedRMExtinctionFile, sep=config.dataSeparator))
 av_ref = ref_data['Reference Extinction'].values[0]
 
 print("="*60)
 print("SUMMARY STATISTICS FOR PAPER")
 print("="*60)
-print(f"\nReference RM: {rm_ref:.1f} ± {rm_ref_std/np.sqrt(8):.1f} rad/m² (std: {rm_ref_std:.1f})")
+print(f"\nReference RM: {rm_ref:.1f} ± {rm_ref_sem:.1f} rad/m² (std: {rm_ref_std:.1f})")
 print(f"Reference Extinction: {av_ref:.2f} mag")
 print(f"Number of ON points: {len(B_parallel)}")
 print(f"\nB_parallel statistics:")
@@ -72,7 +76,7 @@ print(f"Mean extinction: {extinction.mean():.2f} mag")
 fig, ax = plt.subplots(figsize=(8, 6))
 
 # Create histogram with separate colors for positive and negative
-bins = np.linspace(-500, 500, 41)
+bins = np.linspace(min(-500, B_parallel.min()), max(500, B_parallel.max()), 41)
 ax.hist(B_parallel[B_parallel > 0], bins=bins, alpha=0.7, color='royalblue',
         label=r'$B_\parallel > 0$ (toward)', edgecolor='navy', linewidth=0.5)
 ax.hist(B_parallel[B_parallel < 0], bins=bins, alpha=0.7, color='firebrick',
@@ -86,7 +90,7 @@ ax.set_xlabel(r'$B_\parallel$ (µG)')
 ax.set_ylabel('Number of Sources')
 ax.set_title('Distribution of Line-of-Sight Magnetic Field')
 ax.legend(loc='upper right')
-ax.set_xlim(-600, 600)
+ax.set_xlim(bins[0], bins[-1])
 
 # Add statistics text box
 stats_text = f'N = {len(B_parallel)}\n'
@@ -284,7 +288,7 @@ for idx, row in selected_ref.iterrows():
     ref_table_latex += f"{source_id} & {ra_val:.3f} & {dec_val:.3f} & {rm_val:.1f} & {rm_err:.1f} & {av_val:.2f} & -- & -- \\\\\n"
 
 ref_table_latex += r"""\enddata
-\tablecomments{The 8 reference points selected by the MC-BLOS stability-trend algorithm. The weighted mean RM is """ + f"{rm_ref:.1f}" + r""" $\pm$ """ + f"{rm_ref_std/np.sqrt(8):.1f}" + r"""~rad~m$^{-2}$ (standard deviation """ + f"{rm_ref_std:.1f}" + r"""~rad~m$^{-2}$).}
+\tablecomments{The """ + str(n_ref) + r""" reference points selected with stability analysis and spatial separation. The reference RM is """ + f"{rm_ref:.1f}" + r""" $\pm$ """ + f"{rm_ref_sem:.1f}" + r"""~rad~m$^{-2}$ (standard deviation """ + f"{rm_ref_std:.1f}" + r"""~rad~m$^{-2}$).}
 \end{deluxetable*}
 """
 
@@ -311,11 +315,11 @@ stats_table = r"""
 \toprule
 Parameter & Value \\
 \midrule
-Total RM sources matched & """ + f"{len(B_parallel)}" + r""" \\
-Reference (OFF) points & 8 \\
+Total RM sources matched & """ + f"{n_matched}" + r""" \\
+Reference (OFF) points & """ + f"{n_ref}" + r""" \\
 ON points (cloud sight lines) & """ + f"{len(B_parallel)}" + r""" \\
 \midrule
-Reference RM (rad~m$^{-2}$) & $""" + f"{rm_ref:.1f}" + r""" \pm """ + f"{rm_ref_std/np.sqrt(8):.1f}" + r"""$ \\
+Reference RM (rad~m$^{-2}$) & $""" + f"{rm_ref:.1f}" + r""" \pm """ + f"{rm_ref_sem:.1f}" + r"""$ \\
 Reference RM std.\ dev.\ (rad~m$^{-2}$) & """ + f"{rm_ref_std:.1f}" + r""" \\
 Reference $A_V$ (mag) & """ + f"{av_ref:.2f}" + r""" \\
 \midrule
