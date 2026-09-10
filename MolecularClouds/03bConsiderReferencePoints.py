@@ -308,6 +308,12 @@ if config.useUserRefPtsJudgement:
 
 #======================================================================================================================
 # -------- DETERMINE WEIGHTING SCHEME --------
+# Manual choices must obey the same spacing rule as automatic selections.
+_, overlappingChosen = rjl.separateReferencePoints(chosenRefPoints, config.minRefSeparationArcmin)
+if not overlappingChosen.empty:
+    raise ValueError('Chosen OFF points violate the minimum separation of {} arcmin: IDs {}. '
+                     'Choose separated reference points.'.format(
+                         config.minRefSeparationArcmin, list(overlappingChosen['ID#'])))
 refRM = 0.0
 refAvgErr = 0.0
 refRMStd = 0.0

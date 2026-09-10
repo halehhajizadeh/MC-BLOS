@@ -35,6 +35,7 @@ useanomalousIQRNumRemove = configStartSettings['Judgement - Anomalous Off RM Val
 UseOptRefPoints = configStartSettings['Judgement - Optimal Reference Points'].getboolean('Find Optimal Reference Points')
 minRefPoints = configStartSettings['Judgement - Optimal Reference Points'].getint('Minimum Reference Points to be Selected')
 maxFracPointNum = configStartSettings['Judgement - Optimal Reference Points'].getfloat('Max Fraction Reference Points')
+minRefSeparationArcmin = configStartSettings['Judgement - Optimal Reference Points'].getfloat('Minimum Reference Separation Arcmin', fallback=0.0)
 
 useQuadrantEnforce = configStartSettings['Judgement - Cloud Quadrant Sampling'].getboolean('Use Minimum Quadrant Sampling')
 minPointsPerQuadrant = configStartSettings['Judgement - Cloud Quadrant Sampling'].getint('Minimum Points Per Quadrant')

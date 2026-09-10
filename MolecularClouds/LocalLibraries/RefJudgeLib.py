@@ -7,6 +7,31 @@ from sklearn.linear_model import Ridge
 from .BoxBounds import getBoxBound
 import copy
 
+def separateReferencePoints(points, min_separation_arcmin):
+    """Keep spatially separated OFF candidates, preferring low Av then RM error.
+
+    Return kept and rejected rows with their original indexes. Separation is
+    great-circle sky distance, independent of plot marker sizes. Zero disables
+    the filter. This filters OFF eligibility, not the input RM observations.
+    """
+    from astropy.coordinates import SkyCoord
+    import astropy.units as u
+
+    if not np.isfinite(min_separation_arcmin) or min_separation_arcmin < 0:
+        raise ValueError('Minimum reference separation must be finite and nonnegative.')
+    if min_separation_arcmin == 0 or len(points) == 0:
+        return points.copy(), points.iloc[:0].copy()
+    ordered = points.sort_values(['Extinction_Value', 'RM_Err(rad/m2)', 'ID#'], kind='mergesort')
+    coords = SkyCoord(ordered['Ra(deg)'].to_numpy() * u.deg,
+                      ordered['Dec(deg)'].to_numpy() * u.deg)
+    kept, rejected = [], []
+    for i in range(len(ordered)):
+        if kept and np.any(coords[i].separation(coords[kept]).arcmin < min_separation_arcmin):
+            rejected.append(i)
+        else:
+            kept.append(i)
+    return ordered.iloc[kept].copy(), ordered.iloc[rejected].copy()
+
 # -------- FUNCTION DEFINITION --------
 def findWeightedCenter(data, xmin = np.nan, xmax = np.nan, ymin = np.nan, ymax = np.nan, maskWeight = 2):
     """

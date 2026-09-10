@@ -9,3 +9,18 @@ Key Features:
 - Significant reduction in analysis time compared to manual methods.
 
 The software has been validated against previously-published cloud data, producing results consistent within uncertainty ranges. MC-BLOS is poised to facilitate the analysis of forthcoming Faraday rotation observations associated with molecular clouds.
+
+### Spatially separated OFF points
+
+In `MolecularClouds/configStartSettings.ini`, `minimum reference separation arcmin`
+under `[Judgement - Optimal Reference Points]` sets the minimum angular distance
+between selected OFF points. This workspace uses 1.2 arcminutes; zero disables the
+filter, and older configurations without this setting retain their previous behavior.
+
+Stage 03a prefers candidates with lower extinction, breaking ties by lower RM
+uncertainty and then ID. It excludes candidates closer than this distance to an
+already retained candidate before the stability analysis and quadrant selection.
+Excluded OFF candidates are recorded in `IntermediateData/OverlapRej.csv` and
+`Rejected.csv`; input observations are preserved. Manual OFF selections must also
+satisfy the separation rule. Distances are measured on the sky, independently of
+the displayed marker sizes. Changing this setting requires rerunning stages 03–07.

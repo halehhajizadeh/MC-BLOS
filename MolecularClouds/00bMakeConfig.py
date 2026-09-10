@@ -53,6 +53,7 @@ configStartSettings['Judgement - Optimal Reference Points'] = {
     'Find Optimal Reference Points': True,
     'Minimum Reference Points to be Selected': 5,
     'Max Fraction Reference Points': 1,
+    'Minimum Reference Separation Arcmin': 1.2,
 }
 configStartSettings['Judgement - Cloud Quadrant Sampling'] = {
     'Use Minimum Quadrant Sampling': False,
