@@ -34,10 +34,10 @@
 \documentclass[twocolumn]{aastex701}
 
 \usepackage{booktabs}
-\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{placeins}
 \usepackage{hyperref}
+\usepackage{amsmath}
 \begin{document}
 
 \title{Line-of-Sight Magnetic Field in the Perseus Molecular Cloud from VLA Faraday Rotation Measurements}
@@ -384,8 +384,7 @@ and RM values more than five interquartile ranges from the OFF-sample median.
 
   Table~\ref{tab:params} lists the parameters we adopted for Perseus. We ran the
   software with its default configuration except where noted, having first
-  inspected the diagnostic outputs as recommended by \citet{tahani2025mcblos}.
-  The cloud distance is taken as $d = 294$~pc \citep{zucker2018}. The chemical
+  inspected the diagnostic outputs as recommended by \citet{tahani2025mcblos}. The chemical
   model assumes $n_0 = 1000$~cm$^{-3}$, $T_0 = 12$~K, and a Habing field of
   $G_0 = 1$. Reference point selection uses the stability trend option with a
   minimum of five reference points. No quadrant weighting was applied; the
@@ -400,7 +399,7 @@ and RM values more than five interquartile ranges from the OFF-sample median.
   \hline
   Parameter & Value \\
   \hline
-  Cloud distance & 294~pc \\
+
   Volume density $n_0$ & 1000~cm$^{-3}$ \\
   Temperature $T_0$ & 12~K \\
   Habing field $G_0$ & 1 \\
@@ -561,23 +560,27 @@ spatial clustering. We therefore treat the north--west versus south--east
 arrangement as a spatial pattern visible in the map and do not assign it a
 separate clustering significance without a prespecified spatial statistic.
 
-\subsubsection{Sensitivity to the Reference RM}
+
+\subsubsection{Exhaustive Eight-Point Reference Combinations}
+\label{sec:all-reference-combinations}
 \label{sec:rmref-sensitivity}
 
-Because every sign in this analysis follows from subtracting a single scalar
-$\mathrm{RM_{ref}}$, we test how the results respond to plausible variation
-in that zero point. We recompute the positive/negative split for
-$\mathrm{RM_{ref}}$ displaced by $\pm 1$ and $\pm 2$ times the reference
-reference-RM standard error (6.1~rad~m$^{-2}$), and additionally for the value
-$31 \pm 11$~rad~m$^{-2}$ adopted by \citet{tahani2018}. The results are
-Using reference RMs of 19.4, 25.4, 31.6, 37.6, and 43.7~rad~m$^{-2}$ gives
-166/31, 149/48, 122/75, 92/105, and 81/116 positive/negative measurements,
-respectively. The adopted zero point is therefore set by the stability
-analysis rather than by the sign count alone.
+We recalculated the magnetic-field map for all $\binom{14}{8}=3003$
+combinations of eight filtered OFF candidates and compared the maps in an
+animation. The resulting reference RMs span 22.2--43.9~rad~m$^{-2}$.
+Although field strengths and some individual signs change, several groups
+retain their direction throughout this range: positive fields persist in
+the western part of the map and around RA $\simeq50$--$51^\circ$,
+Dec $\simeq31^\circ$, while a group of negative fields persists in the
+southern cloud.
 
-This test matters because the sign asymmetry, rather than the field strength,
-is the result most directly compared to \citet{tahani2018} and
-\citet{tahani2022b}.
+Among the 189 sight lines present in every combination, 77 remain positive
+and 35 remain negative throughout; the other 77 change sign. Thus, the
+oppositely directed fields in these specific parts of the cloud persist
+despite changes in the reference selection. Their persistence supports
+the spatial variation in field direction, although the precise boundary
+between positive and negative regions remains sensitive to the OFF-point
+choice.
 
 \subsection{Field Strength versus Extinction}
 \label{sec:av}
@@ -640,7 +643,7 @@ sensitivity test in Section~\ref{sec:rmref-sensitivity}.
 
 Table~\ref{tab:summary} summarizes the key results.
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \caption{Summary of $B_\parallel$ measurements}
 \label{tab:summary}
@@ -672,7 +675,7 @@ Mean ON-cloud $A_V$ (mag) & 2.43 \\
 Mean nearest-neighbour separation (pc) & 1.4 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}

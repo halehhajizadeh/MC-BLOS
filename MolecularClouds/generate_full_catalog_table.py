@@ -23,28 +23,26 @@ blos_data['TotalLowerBUncertainty'] = final_results['TotalLowerBUncertainty']
 # Generate FULL LaTeX longtable for all 197 sources
 print("Generating full BLOS catalog table (197 sources)...")
 
-latex_table = r"""\begin{longtable}{ccccccccc}
-\caption{Complete catalog of line-of-sight magnetic field measurements toward the Perseus Molecular Cloud. Columns: (1) Source ID from Paper~I; (2--3) J2000 equatorial coordinates; (4) Visual extinction from \textit{Herschel}; (5--6) Observed rotation measure and uncertainty from Paper~I; (7) Derived line-of-sight magnetic field; (8--9) Upper and lower uncertainties on $B_\parallel$, which include contributions from RM measurement error, reference RM uncertainty, extinction uncertainty, and chemical model sensitivity.\label{tab:blos-catalog}} \\
-\toprule
-ID & RA & Dec & $A_V$ & RM$_{\rm obs}$ & $\delta$RM & $B_\parallel$ & $\sigma_{B,+}$ & $\sigma_{B,-}$ \\
- & (deg) & (deg) & (mag) & (rad~m$^{-2}$) & (rad~m$^{-2}$) & ($\mu$G) & ($\mu$G) & ($\mu$G) \\
-\midrule
-\endfirsthead
-\multicolumn{9}{c}{\tablename\ \thetable{} -- continued from previous page} \\
-\toprule
-ID & RA & Dec & $A_V$ & RM$_{\rm obs}$ & $\delta$RM & $B_\parallel$ & $\sigma_{B,+}$ & $\sigma_{B,-}$ \\
- & (deg) & (deg) & (mag) & (rad~m$^{-2}$) & (rad~m$^{-2}$) & ($\mu$G) & ($\mu$G) & ($\mu$G) \\
-\midrule
-\endhead
-\midrule
-\multicolumn{9}{r}{\textit{Continued on next page}} \\
-\endfoot
-\bottomrule
-\endlastfoot
+latex_table = r"""\startlongtable
+\begin{deluxetable*}{rrrrrrrrr}
+\tabletypesize{\scriptsize}
+\tablewidth{0pt}
+\tablecaption{Complete catalog of line-of-sight magnetic field measurements toward Perseus.\label{tab:blos-catalog}}
+\tablehead{
+\colhead{ID} & \colhead{RA} & \colhead{Dec} & \colhead{$A_V$} &
+\colhead{RM$_{\rm obs}$} & \colhead{$\delta$RM} & \colhead{$B_\parallel$} &
+\colhead{$\sigma_{B,+}$} & \colhead{$\sigma_{B,-}$} \\
+\colhead{} & \colhead{(deg)} & \colhead{(deg)} & \colhead{(mag)} &
+\colhead{(rad m$^{-2}$)} & \colhead{(rad m$^{-2}$)} &
+\colhead{($\mu$G)} & \colhead{($\mu$G)} & \colhead{($\mu$G)}
+}
+\startdata
 """
 
 # Add ALL rows
-for idx, row in blos_data.iterrows():
+for row_number, (_, row) in enumerate(blos_data.iterrows()):
+    if row_number and row_number % 35 == 0:
+        latex_table += "\\tablebreak\n"
     source_id = int(row['ID#'])
     ra = row['Ra(deg)']
     dec = row['Dec(deg)']
@@ -57,7 +55,13 @@ for idx, row in blos_data.iterrows():
 
     latex_table += f"{source_id} & {ra:.4f} & {dec:.4f} & {av:.2f} & {rm_obs:.1f} & {rm_err:.1f} & {b_par:.0f} & {b_upper:.0f} & {b_lower:.0f} \\\\\n"
 
-latex_table += r"\end{longtable}"
+latex_table += r"""\enddata
+\tablecomments{Coordinates are J2000. Extinction is from \textit{Herschel}.
+RM and its uncertainty are observed values. The final two columns give the
+upper and lower field uncertainties, including RM measurement, reference RM,
+extinction, and chemical model contributions.}
+\end{deluxetable*}
+"""
 
 # Save the full table
 output_file = os.path.join(final_data_dir, 'blos_full_catalog_table.tex')
