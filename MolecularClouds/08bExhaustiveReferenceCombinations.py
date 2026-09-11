@@ -6,7 +6,7 @@ not changed.
 
 Run from the MolecularClouds directory::
 
-    python exhaustive_reference_combinations.py
+    python 08bExhaustiveReferenceCombinations.py
 
 The resulting GIF contains one frame per combination, in lexicographic
 combination order.  The CSV records the reference values used for every
