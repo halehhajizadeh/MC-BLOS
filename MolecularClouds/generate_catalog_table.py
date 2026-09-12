@@ -11,6 +11,8 @@ import os
 from LocalLibraries import config
 base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
+paper_tables_dir = os.path.join(os.path.dirname(__file__), 'PaperTables')
+os.makedirs(paper_tables_dir, exist_ok=True)
 
 # Load data
 blos_data = pd.read_csv(os.path.join(final_data_dir, 'BLOSPoints.csv'), sep='\t')
@@ -76,8 +78,8 @@ catalog_output = blos_data[['ID#', 'Ra(deg)', 'Dec(deg)', 'Extinction',
 catalog_output.columns = ['ID', 'RA_deg', 'Dec_deg', 'Av_mag', 'RM_obs_rad_m2',
                           'RM_err_rad_m2', 'B_parallel_uG', 'B_upper_err_uG', 'B_lower_err_uG']
 
-catalog_output.to_csv(os.path.join(final_data_dir, 'BLOS_catalog_for_paper.csv'), index=False)
-print(f"\nSaved: {os.path.join(final_data_dir, 'BLOS_catalog_for_paper.csv')}")
+catalog_output.to_csv(os.path.join(paper_tables_dir, 'BLOS_catalog_for_paper.csv'), index=False)
+print(f"\nSaved: {os.path.join(paper_tables_dir, 'BLOS_catalog_for_paper.csv')}")
 
 # Also create a short-format LaTeX table for the paper body (sample)
 short_table = r"""
@@ -109,9 +111,9 @@ short_table += r"""\enddata
 \end{deluxetable*}
 """
 
-with open(os.path.join(final_data_dir, 'blos_sample_table.tex'), 'w') as f:
+with open(os.path.join(paper_tables_dir, 'blos_sample_table.tex'), 'w') as f:
     f.write(short_table)
-print(f"Saved: {os.path.join(final_data_dir, 'blos_sample_table.tex')}")
+print(f"Saved: {os.path.join(paper_tables_dir, 'blos_sample_table.tex')}")
 
 print("\n" + "="*80)
 print("CATALOG STATISTICS")

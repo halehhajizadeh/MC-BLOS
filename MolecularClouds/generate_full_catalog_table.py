@@ -11,6 +11,8 @@ import os
 from LocalLibraries import config
 base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
+paper_tables_dir = os.path.join(os.path.dirname(__file__), 'PaperTables')
+os.makedirs(paper_tables_dir, exist_ok=True)
 
 # Load data
 blos_data = pd.read_csv(os.path.join(final_data_dir, 'BLOSPoints.csv'), sep='\t')
@@ -41,8 +43,6 @@ latex_table = r"""\startlongtable
 
 # Add ALL rows
 for row_number, (_, row) in enumerate(blos_data.iterrows()):
-    if row_number and row_number % 35 == 0:
-        latex_table += "\\tablebreak\n"
     source_id = int(row['ID#'])
     ra = row['Ra(deg)']
     dec = row['Dec(deg)']
@@ -64,7 +64,7 @@ extinction, and chemical model contributions.}
 """
 
 # Save the full table
-output_file = os.path.join(final_data_dir, 'blos_full_catalog_table.tex')
+output_file = os.path.join(paper_tables_dir, 'blos_full_catalog_table.tex')
 with open(output_file, 'w') as f:
     f.write(latex_table)
 
