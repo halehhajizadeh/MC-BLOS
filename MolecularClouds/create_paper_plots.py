@@ -26,6 +26,11 @@ from LocalLibraries import config
 base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
 plots_dir = os.path.join(base_dir, 'Plots')
+paper_tables_dir = os.environ.get(
+    'MCBLOS_PAPER_TABLES_DIR',
+    os.path.join(os.path.dirname(__file__), 'PaperTables'),
+)
+os.makedirs(paper_tables_dir, exist_ok=True)
 
 # Load data - use BLOSPoints.csv for full data including RM columns
 blos_data = pd.read_csv(os.path.join(final_data_dir, 'BLOSPoints.csv'), sep='\t')
@@ -295,7 +300,7 @@ ref_table_latex += r"""\enddata
 print(ref_table_latex)
 
 # Save table to file
-with open(os.path.join(final_data_dir, 'reference_points_table.tex'), 'w') as f:
+with open(os.path.join(paper_tables_dir, 'reference_points_table.tex'), 'w') as f:
     f.write(ref_table_latex)
 print(f"\nSaved: reference_points_table.tex")
 
@@ -340,7 +345,7 @@ Mean ON-point $A_V$ (mag) & """ + f"{extinction.mean():.2f}" + r""" \\
 
 print(stats_table)
 
-with open(os.path.join(final_data_dir, 'summary_statistics_table.tex'), 'w') as f:
+with open(os.path.join(paper_tables_dir, 'summary_statistics_table.tex'), 'w') as f:
     f.write(stats_table)
 print(f"\nSaved: summary_statistics_table.tex")
 

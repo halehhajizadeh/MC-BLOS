@@ -11,7 +11,10 @@ import os
 from LocalLibraries import config
 base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
-paper_tables_dir = os.path.join(os.path.dirname(__file__), 'PaperTables')
+paper_tables_dir = os.environ.get(
+    'MCBLOS_PAPER_TABLES_DIR',
+    os.path.join(os.path.dirname(__file__), 'PaperTables'),
+)
 os.makedirs(paper_tables_dir, exist_ok=True)
 
 # Load data
@@ -106,10 +109,10 @@ for idx, row in blos_data.head(10).iterrows():
 
     short_table += f"{source_id} & {ra:.4f} & {dec:.4f} & {av:.2f} & {rm_obs:.1f} & {rm_err:.1f} & {b_par:.0f} & {b_upper:.0f} & {b_lower:.0f} \\\\\n"
 
-short_table += r"""\enddata
-\tablecomments{Column descriptions: (1) Source ID from Paper~I; (2--3) J2000 coordinates; (4) Visual extinction from \textit{Herschel}; (5--6) Observed RM and uncertainty from Paper~I; (7) Line-of-sight magnetic field; (8--9) Asymmetric uncertainties on $B_\parallel$. The complete table with all 197 sources is available in machine-readable format.}
-\end{deluxetable*}
-"""
+short_table += """\\enddata
+\\tablecomments{{Column descriptions: (1) Source ID from Paper~I; (2--3) J2000 coordinates; (4) Visual extinction from \\textit{{Herschel}}; (5--6) Observed RM and uncertainty from Paper~I; (7) Line-of-sight magnetic field; (8--9) Asymmetric uncertainties on $B_\\parallel$. The complete table with all {} sources is available in machine-readable format.}}
+\\end{{deluxetable*}}
+""".format(len(blos_data))
 
 with open(os.path.join(paper_tables_dir, 'blos_sample_table.tex'), 'w') as f:
     f.write(short_table)

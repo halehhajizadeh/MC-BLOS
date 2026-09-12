@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate the COMPLETE BLOS catalog table for the paper (all 197 sources).
+Generate the complete BLOS catalog table for the paper.
 """
 
 import pandas as pd
@@ -11,7 +11,10 @@ import os
 from LocalLibraries import config
 base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
-paper_tables_dir = os.path.join(os.path.dirname(__file__), 'PaperTables')
+paper_tables_dir = os.environ.get(
+    'MCBLOS_PAPER_TABLES_DIR',
+    os.path.join(os.path.dirname(__file__), 'PaperTables'),
+)
 os.makedirs(paper_tables_dir, exist_ok=True)
 
 # Load data
@@ -23,7 +26,7 @@ blos_data['TotalUpperBUncertainty'] = final_results['TotalUpperBUncertainty']
 blos_data['TotalLowerBUncertainty'] = final_results['TotalLowerBUncertainty']
 
 # Generate FULL LaTeX longtable for all 197 sources
-print("Generating full BLOS catalog table (197 sources)...")
+print("Generating full BLOS catalog table...")
 
 latex_table = r"""\startlongtable
 \begin{deluxetable*}{rrrrrrrrr}
