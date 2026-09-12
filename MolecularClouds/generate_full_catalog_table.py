@@ -13,7 +13,7 @@ base_dir = config.CloudOutputDir
 final_data_dir = os.path.join(base_dir, 'FinalData')
 paper_tables_dir = os.environ.get(
     'MCBLOS_PAPER_TABLES_DIR',
-    os.path.join(os.path.dirname(__file__), 'PaperTables'),
+    os.path.join(base_dir, 'PaperTables'),
 )
 os.makedirs(paper_tables_dir, exist_ok=True)
 

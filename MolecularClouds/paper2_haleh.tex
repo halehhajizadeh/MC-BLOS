@@ -34,6 +34,7 @@
 \documentclass[twocolumn]{aastex701}
 
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{placeins}
 \usepackage{hyperref}
@@ -405,14 +406,10 @@ and RM values more than five interquartile ranges from the OFF-sample median.
   Habing field $G_0$ & 1 \\
   Extinction threshold $A_{V,\rm th}$ & 1.0~mag \\
   Near high-extinction multiplier & 2 (20 pixels, 30~arcmin) \\
-  High-extinction threshold multiplier & 5 (giving $A_V \geq 5.0$~mag) \\
+  High-extinction threshold & 5.0~mag \\
   Anomalous RM IQR multiple & 5 \\
   ON-point extinction multiplier & 1.0 \\
-  ON-point extinction threshold & $0.553~\mathrm{mag}$ \\
-  Quadrant weighting & None \\
   Minimum reference points & 5 \\
-  Selected reference (OFF) points & 8 \\
-  ON points used for $B_\parallel$ & 197 \\
   \hline
   \end{tabular}
   \end{table}
@@ -472,7 +469,7 @@ sample standard deviation is 17.2~rad~m$^{-2}$.
 Table~\ref{tab:reference-points} lists the coordinates, RMs, and extinctions
 of the reference sample.
 
-\input{PaperTables/reference_points_table.tex}
+\input{FileOutput_ImprovedPlots/Perseus/PaperTables/reference_points_table.tex}
 
 \subsection{Classification of Sight Lines}
 \label{sec:classification}
@@ -874,6 +871,6 @@ field, and extinction and chemical model uncertainties, which affect only the
 magnitude.
 
 
-\input{PaperTables/blos_full_catalog_table.tex}
+\input{FileOutput_ImprovedPlots/Perseus/PaperTables/blos_full_catalog_table.tex}
 
 \end{document}
