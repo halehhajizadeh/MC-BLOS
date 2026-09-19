@@ -3,6 +3,8 @@ This is the fourth stage of the BLOSMapping method where the BLOS values are cal
 the previous stage.  This file also produces a scatter plot of BLOS points.
 """
 import math
+import argparse
+from pathlib import Path
 import pandas as pd
 
 import matplotlib.pyplot as plt
@@ -23,8 +25,24 @@ import LocalLibraries.PlotUtils as putil
 
 import logging
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--zeeman-only', action='store_true',
+                    help='Use saved Perseus BLOS data and save only the Zeeman map variant.')
+parser.add_argument('--sign-secure', action='store_true',
+                    help='Keep only points whose asymmetric uncertainty interval does not cross zero.')
+parser.add_argument('--uncertainty-100', action='store_true',
+                    help='Keep only points with both asymmetric uncertainties at most 100 percent of |BLOS|.')
+args = parser.parse_args()
+
 # -------- CHOOSE THE REGION OF INTEREST --------
 cloudName = config.cloud
+isPerseus = cloudName.casefold() in {'perseus', 'perseus_combined'}
+if args.zeeman_only and not isPerseus:
+    parser.error('--zeeman-only requires a Perseus cloud configuration')
+if (args.sign_secure or args.uncertainty_100) and not args.zeeman_only:
+    parser.error('filter options currently require --zeeman-only')
+if args.sign_secure and args.uncertainty_100:
+    parser.error('choose only one BLOS filter')
 regionOfInterest = Region(cloudName)
 # -------- CHOOSE THE REGION OF INTEREST. --------
 
@@ -38,10 +56,19 @@ MatchedRMExtinctFile = config.MatchedRMExtinctionFile
 BLOSPointsFile = config.BLOSPointsFile
 BLOSPointsPlotFile = config.BLOSPointsPlot
 LogFile = config.Script04File
+if args.sign_secure or args.uncertainty_100:
+    outputTag = 'SignSecure' if args.sign_secure else 'Uncertainty100'
+    filteredRoot = Path(config.CloudOutputDir).parent / (Path(config.CloudOutputDir).name + '_' + outputTag)
+    filteredDataDir = filteredRoot / 'FinalData'
+    filteredPlotDir = filteredRoot / 'Plots'
+    filteredDataDir.mkdir(parents=True, exist_ok=True)
+    filteredPlotDir.mkdir(parents=True, exist_ok=True)
+    BLOSPointsPlotFile = str(filteredPlotDir / f'BLOSPointMap_{outputTag}.png')
 # -------- DEFINE FILES AND PATHS. --------
 
 # -------- CONFIGURE LOGGING --------
-logging.basicConfig(filename=LogFile, filemode='w', format=config.logFormat, level=logging.INFO)
+if not args.zeeman_only:
+    logging.basicConfig(filename=LogFile, filemode='w', format=config.logFormat, level=logging.INFO)
 # -------- CONFIGURE LOGGING --------
 
 # -------- READ REFERENCE POINT TABLE --------
@@ -59,12 +86,36 @@ RemainingPointTable = MREF.rmLowExtPts(RemainingPointTable, ExtLimit)
 # =====================================================================================================================
 
 # -------- CALCULATE BLOS --------
-BLOSData = CalculateB(regionOfInterest.AvFilePath, RemainingPointTable, fiducialRM, fiducialRMAvgErr, fiducialRMStd, fiducialExtinction, NegativeExtinctionEntriesChange = config.negScaledExtOption)
-BLOSData.to_csv(BLOSPointsFile, index=False, na_rep=config.missingDataRep, sep=config.dataSeparator)
-
-message = 'Saving calculated magnetic field values to ' + BLOSPointsFile
-logging.info(message)
-print(message)
+if args.zeeman_only:
+    BLOSData = pd.read_csv(BLOSPointsFile, sep=config.dataSeparator)
+    if args.sign_secure or args.uncertainty_100:
+        uncertaintyFile = Path(config.CloudFinalDataDir) / 'FinalBLOSResults.csv'
+        uncertaintyData = pd.read_csv(uncertaintyFile, sep=config.dataSeparator)
+        uncertaintyData = uncertaintyData.set_index('ID#')
+        field = BLOSData['Magnetic_Field(uG)']
+        upper = uncertaintyData.loc[BLOSData['ID#'], 'TotalUpperBUncertainty'].to_numpy()
+        lower = uncertaintyData.loc[BLOSData['ID#'], 'TotalLowerBUncertainty'].to_numpy()
+        if args.sign_secure:
+            # Retain only intervals wholly above or wholly below zero.
+            secure = ((field.to_numpy() > 0) & (field.to_numpy() - lower > 0)) | \
+                     ((field.to_numpy() < 0) & (field.to_numpy() + upper < 0))
+        else:
+            # Retain points only when each asymmetric uncertainty is <=100% of |B|.
+            secure = (lower <= field.abs().to_numpy()) & (upper <= field.abs().to_numpy())
+        BLOSData = BLOSData.loc[secure].copy()
+        secureIDs = BLOSData['ID#'].tolist()
+        BLOSData.to_csv(filteredDataDir / 'BLOSPoints.csv', index=False,
+                        na_rep=config.missingDataRep, sep=config.dataSeparator)
+        uncertaintyData.loc[secureIDs].reset_index().to_csv(
+            filteredDataDir / 'FinalBLOSResults.csv', index=False,
+            na_rep=config.missingDataRep, sep=config.dataSeparator)
+        print(f'{outputTag} filter retained {len(BLOSData)} of {len(secure)} points')
+else:
+    BLOSData = CalculateB(regionOfInterest.AvFilePath, RemainingPointTable, fiducialRM, fiducialRMAvgErr, fiducialRMStd, fiducialExtinction, NegativeExtinctionEntriesChange = config.negScaledExtOption)
+    BLOSData.to_csv(BLOSPointsFile, index=False, na_rep=config.missingDataRep, sep=config.dataSeparator)
+    message = 'Saving calculated magnetic field values to ' + BLOSPointsFile
+    logging.info(message)
+    print(message)
 # -------- CALCULATE BLOS. --------
 
 # =====================================================================================================================
@@ -230,13 +281,50 @@ ax.text(0.02, 0.98, offPointsText, transform=ax.transAxes, fontsize=12, vertical
 
 # ---- Display or save the figure
 # plt.show()
-plt.savefig(BLOSPointsPlotFile, bbox_inches='tight')
-# Also save PDF version
-BLOSPointsPlotFilePDF = BLOSPointsPlotFile.replace('.png', '.pdf')
-plt.savefig(BLOSPointsPlotFilePDF, bbox_inches='tight', format='pdf')
+if not args.zeeman_only:
+    fig.savefig(BLOSPointsPlotFile, bbox_inches='tight')
+    BLOSPointsPlotFilePDF = str(Path(BLOSPointsPlotFile).with_suffix('.pdf'))
+    fig.savefig(BLOSPointsPlotFilePDF, bbox_inches='tight', format='pdf')
+    message = 'Saving BLOS figure to ' + BLOSPointsPlotFile + ' and ' + BLOSPointsPlotFilePDF
+    logging.info(message)
+    print(message)
+
+if args.sign_secure or args.uncertainty_100:
+    filteredPath = Path(BLOSPointsPlotFile)
+    fig.savefig(filteredPath, bbox_inches='tight')
+    fig.savefig(filteredPath.with_suffix('.pdf'), bbox_inches='tight', format='pdf')
+    print('Saving filtered BLOS figure to ' + str(filteredPath) +
+          ' and ' + str(filteredPath.with_suffix('.pdf')))
+
+if isPerseus and not (args.sign_secure or args.uncertainty_100):
+    # Goodman et al. (1989), ApJL 338, L61, doi:10.1086/185401:
+    # -27 +/- 4 uG in the Zeeman convention = +27 +/- 4 uG here
+    # (Faraday convention: positive toward us).
+    # Goodman et al. (1989), Fig. 1: FK4 B1950 03h30m12s +30d57m26s,
+    # transformed to ICRS. The 51.32 deg RA quoted in Tahani (2018)
+    # is inconsistent with the original pointing (approximately 53.32 deg).
+    _, zeeman_size = putil.p2RGB([27], size_cap=1000, scale_factor=0.5, alpha=0.7)
+    # Modest visibility boost for the star: 40.5 pt^2, versus the original 230.
+    zeeman_size = [size * 3 for size in zeeman_size]
+    zeeman = ax.scatter(53.32429106, 31.12498826, transform=ax.get_transform('icrs'),
+                        marker='*', s=zeeman_size, facecolor='blue', edgecolor='white',
+                        linewidth=0.5, zorder=20)
+    # Insert a full-width row above the original two-column legend, preserving
+    # its marker order, column spacing, font size, and frame styling.
+    zeeman_row = ax.legend(handles=[zeeman], labels=[
+        r'Zeeman: $+27\pm4\,\mu\mathrm{G}$'
+    ], scatterpoints=1, loc='lower left')
+    from matplotlib.offsetbox import DrawingArea, VPacker
+    legend._legend_box.get_children().insert(1, VPacker(
+        children=[zeeman_row._legend_handle_box, DrawingArea(0, 3)],
+        align='left', pad=0, sep=0))
+    legend._legend_box.align = 'left'
+    ax.legend_ = legend
+    plotPath = Path(BLOSPointsPlotFile)
+    for suffix in ('.png', '.pdf'):
+        zeemanPath = plotPath.with_name(plotPath.stem + '_Zeeman').with_suffix(suffix)
+        fig.savefig(zeemanPath, bbox_inches='tight')
+        print('Saving BLOS Zeeman figure to ' + str(zeemanPath))
 plt.close()
 # ---- Display or save the figure.
-message = 'Saving BLOS figure to ' + BLOSPointsPlotFile + ' and ' + BLOSPointsPlotFilePDF
-logging.info(message)
-print(message)
 # -------- CREATE A FIGURE - BLOS POINT MAP. --------

@@ -1,3 +1,4 @@
+% Revised following a saved-results and source-code audit; see PAPER_REVIEW.md.
 
 \documentclass[twocolumn]{aastex701}
 
@@ -6,10 +7,6 @@
 \usepackage{placeins}
 \usepackage{hyperref}
 \usepackage{amsmath}
-\graphicspath{{PaperRevision/plots/}{FileOutput_ImprovedPlots/Perseus/Plots/}}
-\shorttitle{Magnetic Field in Perseus}
-\shortauthors{Hajizadeh et al.}
-\hypersetup{pdftitle={Line-of-Sight Magnetic Field in the Perseus Molecular Cloud},pdfauthor={Haleh Hajizadeh et al.}}
 \begin{document}
 
 \title{Line-of-Sight Magnetic Field in the Perseus Molecular Cloud from VLA Faraday Rotation Measurements}
@@ -36,27 +33,11 @@
 
 \begin{abstract}
 
-We investigate the line-of-sight magnetic field in the Perseus molecular
-cloud using VLA Faraday rotation measurements, extinction, and chemical-model
-electron columns. After reconciling the archival input with the published catalog, the sample
-contains 205 sources, of
-which eight define a reference RM of $31.6\pm6.1$~rad~m$^{-2}$ (standard error)
-and 197 yield field estimates. Numerical boundary corrections give a median
-absolute field of $116~\mu$G; 13 sight lines have unbounded extinction-related
-magnitude sensitivity. Thirteen positional matches to earlier Faraday
-measurements give 11 nominal field-sign agreements. Across 1287
-separation-eligible eight-reference subsets, 78 positive and 40 negative
-directions persist among 189 common sight lines. The positive-field fraction
-is higher north of an extinction-derived axis, and the contrast survives a
-conservative source-quality cut. However, a diagnostic spatial foreground
-plane changes 74 nominal signs, limiting a foreground-independent claim of
-a cloud-scale reversal. No VLA sight line samples the half-power beam of the
-three Arecibo Zeeman pointings considered. We provide reproducible numerical,
-quality, and literature comparisons. Absolute field strengths remain
-sensitive to the electron-column model and extinction-map systematics.
 \end{abstract}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Verify each concept ID at https://astrothesaurus.org before submission.
 \keywords{\uat{Interstellar magnetic fields}{845} ---
           \uat{Molecular clouds}{1072} ---
           \uat{Faraday effect}{1259} ---
@@ -64,6 +45,7 @@ sensitive to the electron-column model and extinction-map systematics.
           \uat{Interstellar medium}{847} ---
           \uat{Star formation}{1569}}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 \label{sec:intro}
 
@@ -77,8 +59,8 @@ Faraday rotation is the rotation of the plane of linear polarization as radiatio
 $\Psi(\lambda)=\Psi_0+\mathrm{RM}\lambda^2$, where $\Psi_0$ is the intrinsic polarization angle, $\lambda$ is the wavelength, and $\mathrm{RM}$ is the rotation measure \citep{burn1966,brentjens2005}. Under these conditions, RM equals the Faraday depth,
 \begin{equation}
 \label{eq:rm-basic}
-\Phi = 0.812 \int_{\rm source}^{\rm observer} n_e B_\parallel\,dl
-\quad [\mathrm{rad\,m^{-2}}],
+\Phi = 0.812 \int_{\rm source}^{\rm observer} n_e B_\parallel,dl
+\quad [\mathrm{rad,m^{-2}}],
 \end{equation}
 where $n_e$ is the free electron density in cm$^{-3}$, $B_\parallel$ is in $\mu$G, and $dl$ is in pc. Positive $B_\parallel$ denotes a field directed toward the observer \citep{han2017observing}. The measured rotation depends on both the magnetic field and the electron density along the propagation path. More complex configurations of emitting and rotating material need not follow a single linear relation between polarization angle and $\lambda^2$.
 
@@ -92,7 +74,7 @@ where the foreground and background terms represent contributions outside the ta
 
 \citet{tahani2018} developed a method that combines background-source RMs, cloud extinction maps, and chemical modeling to carry out these steps. Background sources projected onto nearby low-extinction regions are used as reference points to estimate the RM contribution outside the cloud. The extinction map and modeled electron abundances then provide estimates of the electron column density through the cloud. This method is implemented in the publicly available \texttt{MC-BLOS} (Molecular Cloud Line-of-Sight Magnetic Field) software \citep{tahani2025mcblos}. The software provides a systematic procedure for selecting reference points, calculating the cloud RM contribution, and deriving $B_\parallel$ and its uncertainties. Its treatment of electron abundance as a function of cloud depth allows changes in ionization conditions to be included when estimating the field strength.
 
-The Perseus Molecular Cloud is a nearby star-forming region where improved sampling can extend earlier measurements of $B_\parallel$. At a distance of $294\pm17$~pc \citep{zucker2018}, it has extensive observations of extinction, dust emission, and molecular gas \citep{ridge2006complete,kainulainen2009,lombardi2009nicest,andre2010,curtis2010submillimetre}. Using the NVSS-based RM catalog of \citet{taylor2009}, \citet{tahani2018} obtained line-of-sight field estimates toward Perseus and reported an indication of a field reversal across the cloud. Their full Perseus catalog contains 24 field estimates over a wider area, of which 11 retain their sign within their reported uncertainty excursions. More measurements are needed to examine the distribution of field strengths and determine how consistently the inferred directions follow this earlier pattern.
+The Perseus Molecular Cloud is a nearby star-forming region where improved sampling can extend earlier measurements of $B_\parallel$. At a distance of $294\pm17$~pc \citep{zucker2018}, it has extensive observations of extinction, dust emission, and molecular gas \citep{ridge2006complete,kainulainen2009,lombardi2009nicest,andre2010,curtis2010submillimetre}. Using the NVSS-based RM catalog of \citet{taylor2009}, \citet{tahani2018} obtained line-of-sight field estimates toward Perseus and reported an indication of a field reversal across the cloud. However, these estimates were available at only approximately ten positions through the cloud. More measurements are needed to examine the distribution of field strengths and determine how consistently the inferred directions follow this earlier pattern.
 
 
 Previous observations have constrained the magnetic field in Perseus
@@ -122,17 +104,18 @@ $B_\perp=1.1\pm0.6~\mathrm{mG}$ \citep{cortes2025first}.
 These results probe different field components, gas conditions,
 and spatial scales, and therefore do not define a single
 representative field strength for Perseus. They motivate improved
-spatial sampling of $B_\parallel$ across the cloud.
+spatial sampling $B_\parallel$ across the cloud.
 
-In Paper~I \citep{hajizadeh2026comprehensive}, we presented a dedicated VLA L-band polarization survey of Perseus covering approximately $13.8$~deg$^2$. The survey provides wideband RM measurements for 205 high-confidence polarized sources, corresponding to approximately $14.8$ sources per square degree. This survey provides the observational basis for the present study; the archived input is reconciled with the published catalog as documented below.
+In Paper~I \citep{hajizadeh2026comprehensive}, we presented a dedicated VLA L-band polarization survey of Perseus covering approximately $13.8$~deg$^2$. The survey provides wideband RM measurements for 205 high-confidence polarized sources, corresponding to approximately $14.8$ sources per square degree. This catalog substantially increases the number of sampled positions and provides the observational basis for the present study.
 
 Our aim is to use these measurements to determine the strength and direction of the line-of-sight magnetic field at individual positions across Perseus. We apply \texttt{MC-BLOS} to the VLA RM catalog, together with an extinction map and chemical-model electron abundances, to obtain $B_\parallel$ estimates at 197 positions. We examine the distribution of field strengths, the locations of fields directed toward and away from the observer, and the relation between the inferred field strengths and extinction. We also assess the uncertainties and the sensitivity of the results to reference-point selection, since a change in the reference RM can affect both the magnitude and sign of the inferred field.
 
-The main advance of this work is the denser sampling provided by 197 field estimates within the VLA survey area. We identify 13 positional matches to the 24 published Perseus estimates; the total counts cover different areas and are not a footprint-matched density ratio. This denser sampling allows us to examine spatial variations in $B_\parallel$ in regions that were previously poorly sampled and reassess the suggested field reversal with a larger set of measurements. The resulting catalog provides an expanded observational basis for studying the line-of-sight magnetic field in Perseus.
+The main advance of this work is the increase from approximately ten positions with cloud field estimates in the earlier analysis to 197 positions within our survey footprint. This denser sampling allows us to examine spatial variations in $B_\parallel$ in regions that were previously poorly sampled and reassess the suggested field reversal with a larger set of measurements. The resulting catalog provides an expanded observational basis for studying the line-of-sight magnetic field in Perseus.
 
 The remainder of this paper presents the observational data, describes the application of \texttt{MC-BLOS}, and reports the derived $B_\parallel$ estimates and their spatial distribution. We then discuss the comparison with previous measurements, the sensitivity of the results to the analysis assumptions, and the limitations of the inferred field strengths before summarizing our conclusions.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data}
 \label{sec:data}
 
@@ -145,40 +128,16 @@ $\sim 13.8$~deg$^2$ in four mosaic regions. The original setup covered 930--2070
 windows; nine 64~MHz windows were retained after RFI flagging, with central
 frequencies spanning approximately 1346--2038~MHz. Polarization spectra were
 formed from 72 frequency bins of width 8~MHz, smoothed to a common
-$60\arcsec$ beam.
+$60\arcsec$ beam. 
 
 The mean Stokes~$I$ sensitivity is $\sim 80$~$\mu$Jy~beam$^{-1}$, yielding a
 catalog of 1410 compact radio sources. RMs were derived using RM Synthesis
 \citep{burn1966,brentjens2005} and RM CLEAN \citep{heald2009}, with a
 conservative $8\sigma$ threshold on the Faraday-spectrum peak. Paper~I
-reports 205 polarized sources, with a source density of $\sim 14.8$~deg$^{-2}$. This is more than
+reports 205 polarized sources, all of which were used here, with a source density of $\sim 14.8$~deg$^{-2}$. This is more than
 ten times the $\sim 1.25$~deg$^{-2}$ density of the NVSS-based RM catalog
-in the same region reported in Paper~I.
+in the same region reported in Paper~I. 
 
-
-\subsection{Input Catalog Provenance}
-\label{sec:catalog-provenance}
-The configured archival RM file contained 206 entries rather than the 205
-published in Paper I. Its saved extinction-matched sample retained an extra
-source (local ID 121, $\alpha=52.52029^\circ$, $\delta=31.19632^\circ$,
-RM $18.96$~rad~m$^{-2}$) and omitted published source
-VCPMC J032941.7+313346 (RM $50.70$~rad~m$^{-2}$). We adopt the published
-membership: the extra source is removed and the missing source is restored
-as local ID 205. The remaining 204 sources match the published positions
-within $0.1\arcsec$, and their existing higher-precision RMs agree with the
-published values to rounding precision.
-
-The restored source falls on an invalid extinction pixel ($A_V=-1$).
-We interpolate linearly from valid pixels in its surrounding $5\times5$
-window, obtaining $A_V=6.12$~mag; its nominal field is $+78.9~\mu$G.
-The extinction sensitivity uses the valid minimum and maximum in this
-window, and the machine-readable catalog marks the central extinction as
-interpolated. It does not enter the low-extinction reference pool. The
-revised sample therefore still contains 205 input sources and 197 ON
-sight lines, with 123 positive and 74 negative nominal fields. The archived
-input gives 122/75 and the same median absolute field. We preserve that
-comparison separately. The restored source has F1=1 and is excluded from
-the conservative quality-selected sample.
 
 \subsection{Extinction Map}
 
@@ -190,9 +149,8 @@ the conservative quality-selected sample.
   \citet{kainulainen2009}, constructed using the NICEST color-excess
   method \citep{lombardi2009nicest}. This method estimates dust extinction
   from the near-infrared colors of background stars. The visual-extinction
-  ($A_V$) map used here has a pixel spacing of $1.5$~arcmin. The local FITS
-  header does not establish the effective beam or fully document this
-  reprocessed product; the pixel spacing is not treated as its resolution. All 205 RM sources in our input
+  ($A_V$) map used here has a pixel spacing of $1.5$~arcmin, distinct
+  from its effective angular resolution. All 205 RM sources in our input
   catalog are represented in the RM--extinction matched sample.
 
   Following \citet{tahani2025mcblos}, we relate visual extinction to total
@@ -211,9 +169,10 @@ the conservative quality-selected sample.
   \end{equation}
   This corrected extinction determines the integration depth through
   the chemical model used to estimate the electron column density.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Methodology}
   \label{sec:method}
-We used \texttt{MC-BLOS} v1.0 with the numerical corrections described below\footnote{\url{https://github.com/MehrnooshTahani/MC-BLOS}} \citep{tahani2025mcblos} to derive $B_\parallel$ from the VLA RM catalog and extinction map described above. In the following subsections, we describe the reference-point selection, electron column density estimates, adopted parameters, and uncertainty calculations used for Perseus. Full descriptions of the underlying method and software are provided by \citet{tahani2018} and \citet{tahani2025mcblos}.
+We used \texttt{MC-BLOS} v1.0\footnote{\url{https://github.com/MehrnooshTahani/MC-BLOS}} \citep{tahani2025mcblos} to derive $B_\parallel$ from the VLA RM catalog and extinction map described above. In the following subsections, we describe the reference-point selection, electron column density estimates, adopted parameters, and uncertainty calculations used for Perseus. Full descriptions of the underlying method and software are provided by \citet{tahani2018} and \citet{tahani2025mcblos}.
 
 
   \subsection{Reference Point Selection}
@@ -275,25 +234,10 @@ RM values more than 5 interquartile ranges from the initial candidate-sample med
            {0.812 \, N_e \;[\mathrm{cm^{-3}\,pc}]}.
   \end{equation}
 
-  \subsection{Numerical Verification}
-  We reproduced the archived nominal fields with the archived implementation
-  before correcting two boundary operations in the electron-column calculation.
-  Extinction coordinates supplied to linear interpolation are now increasing;
-  a path shorter than the first model layer integrates only to the requested
-  depth, assuming constant abundance between the surface and that first point.
-  The existing full-layer quadrature is retained. Holding the selected OFF
-  sample fixed, the median fractional change in field strength is 0.25\%,
-  with a largest absolute change of 58.7\% for a shallow sight line.
-  No nominal field signs change. Repeating the original stability calculation
-  with the corrected fields still recommends eight references.
-  The corrected calculations and the archived comparison are retained
-  separately. All sensitivity calculations are joined to the nominal catalog
-  by source identifier rather than row position.
-
   \subsection{Input Parameters}
 
-  Table~\ref{tab:params} lists the parameters we adopted for Perseus. We retained the
-  archived selection configuration except where noted, having first
+  Table~\ref{tab:params} lists the parameters we adopted for Perseus. We ran the
+  software with its default configuration except where noted, having first
   inspected the diagnostic outputs as recommended by \citet{tahani2025mcblos}. The chemical
   model assumes $n_0 = 1000$~cm$^{-3}$, $T_0 = 12$~K, and a Habing field of
   $G_0 = 1$. Reference point selection uses the stability trend option with a
@@ -356,12 +300,10 @@ RM values more than 5 interquartile ranges from the initial candidate-sample med
 
   The resulting RM, extinction, temperature, and density contributions
   are combined in quadrature to obtain upper and lower uncertainties.
-  For the revised catalog we retain these excursions without the original
-  sign-related clipping or integer rounding. If the extinction window reaches
-  zero cloud extinction, the electron column can approach zero and the
-  magnitude excursion is reported as unbounded; this occurs for 13 sight lines.
-  These asymmetric uncertainties are model-dependent sensitivity estimates,
-  not formal Gaussian confidence intervals or tests of field direction.
+  The software additionally applies a clipping prescription intended to
+  prevent the non-RM contributions alone from implying a field reversal.
+  These asymmetric uncertainties are model-dependent estimates, not
+  formal Gaussian confidence intervals.
 
   For a positive electron column density, the field direction is set by
   the sign of $\mathrm{RM_{obs}}-\mathrm{RM_{ref}}$. Extinction and
@@ -369,14 +311,15 @@ RM values more than 5 interquartile ranges from the initial candidate-sample med
   whereas RM uncertainties can make its direction ambiguous. We assess
   the significance of the field directions separately in
   Section~\ref{sec:signs}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 \label{sec:results}
 
 \subsection{Reference RM Determination}
 \label{sec:rmref}
 
-All 205 published sources are represented after the input correction and
-  explicit interpolation described in Section~\ref{sec:catalog-provenance}. Of these, 18 satisfy the initial OFF-reference criterion,
+All 205 polarized sources from Paper~I are matched to the extinction
+  map. Of these, 18 satisfy the initial OFF-reference criterion,
   $A_V \leq 1.0$~mag. Four candidates (IDs 18, 27, 132, and 170) are
   rejected because their surrounding proximity boxes contain pixels
   with $A_V > 5.0$~mag, leaving 14 candidates. The anomalous-RM filter
@@ -395,15 +338,7 @@ All 205 published sources are represented after the input correction and
 
 
 
-
-\par
-\input{PaperRevision/tables/off_candidate_audit.tex}
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.72\textwidth]{off_candidate_selection.pdf}
-\caption{Initial low-extinction reference candidates and their selection status. Error bars show the input RM errors. Labels are local source identifiers. The dashed line is the adopted reference RM.}
-\label{fig:off-selection}
-\end{figure*}
+\input{off_candidate_audit.tex}
 
 
 
@@ -413,7 +348,7 @@ To determine how many OFF references to adopt, MC-BLOS examines the
   stability of the inferred magnetic fields as reference candidates
   are added in order of increasing extinction. At each step, the
   reference RM and mean reference extinction are recalculated, and
-  $B_\parallel$ is recomputed for the remaining ON points. The aim is to
+  $B_\parallel$ is recomputed for each OFF point. The aim is to
   identify a reference count beyond which adding further candidates
   produces relatively small changes in the inferred fields.
 
@@ -449,7 +384,7 @@ To determine how many OFF references to adopt, MC-BLOS examines the
   where the quoted uncertainty is the standard error of the mean.
   The sample standard deviation is 17.2~rad~m$^{-2}$.
 
-\begin{figure*}[t]
+\begin{figure*}[th!]
 \centering
 \includegraphics[width=0.7\textwidth]{stability_option2_summary.pdf}
 \caption{Stability trend analysis for reference point selection. The dark blue
@@ -461,7 +396,7 @@ adopted number of reference points, $N = 8$, selected by the pipeline's individu
 \label{fig:stability}
 \end{figure*}
 
-The Galactic Faraday reconstruction of \citet{hutschenreuter2022galactic} provides context for the total Galactic rotation toward Perseus. It can include a contribution from the cloud itself, whereas our selected OFF-cloud measurements estimate the contribution from material outside the cloud. We therefore retain the OFF-cloud reference for the magnetic field calculation; the reconstruction is not an independent measurement of the cloud foreground.
+For comparison, we sampled the version-2 Galactic Faraday rotation map of \citet{hutschenreuter2022galactic} at $(l,b)=(159^\circ,-20^\circ)$, a representative position toward Perseus. The corresponding HEALPix pixel gives $41.8 \pm 16.8$~rad~m$^{-2}$, where the uncertainty is the posterior standard deviation supplied with the map. This estimate is approximately $10$~rad~m$^{-2}$ higher than our adopted reference RM of $31.6 \pm 6.1$~rad~m$^{-2}$, although the difference is smaller than the map uncertainty. The two estimates represent different quantities: the reconstruction describes the total Galactic Faraday rotation toward this position and may include a contribution from Perseus, whereas our reference RM is derived from selected OFF-cloud points to estimate the contribution from material outside the cloud. We therefore use the map value as contextual information and retain the OFF-cloud reference for the magnetic field calculation.
 
 
 
@@ -471,9 +406,9 @@ The Galactic Faraday reconstruction of \citet{hutschenreuter2022galactic} provid
 After removing the 8 adopted reference points, the remaining 197 sources are
 treated as ON-cloud sight lines. Five candidates remain eligible after separation but are not selected;
 a sixth (ID 197) is excluded by the separation rule. All six
-remain in the ON sample because the stability procedure selects the
+they remain in the ON sample because the stability procedure selects the
 reference zero point rather than defining an additional exclusion criterion.
-The full ON sample has extinctions spanning $A_V = 0.65$--$15.6$~mag with a mean of 2.44~mag.
+Their extinctions span $A_V = 0.65$--$15.6$~mag with a mean of 2.43~mag.
 
 \subsection{Line-of-Sight Magnetic Field Measurements}
 \label{sec:blos}
@@ -484,13 +419,13 @@ distribution of the resulting measurements overlaid on the extinction map.
 
 
 
-\begin{figure*}[t]
+\begin{figure*}[ht!]
 \centering
-\includegraphics[width=0.80\textwidth]{BLOSPointMap.pdf}
+\includegraphics[width=0.98\textwidth]{BLOSPointMap.pdf}
 \caption{Spatial distribution of the line-of-sight magnetic field
 $B_\parallel$ across the Perseus Molecular Cloud, overlaid on the
-visual extinction map used in this analysis. Symbol area increases with
-$|B_\parallel|$ with display limits at both ends, and color indicates field direction: blue for positive
+visual extinction map used in this analysis. Symbol size is proportional to
+$|B_\parallel|$ and color indicates field direction: blue for positive
 $B_\parallel$ (toward the observer), red for negative $B_\parallel$ (away from
 the observer). Green circles mark the 8 reference points used to determine
 $\mathrm{RM_{ref}}$.}
@@ -499,66 +434,64 @@ $\mathrm{RM_{ref}}$.}
 
 The derived $B_\parallel$ values span:
 \begin{itemize}
-    \item range: $-993$ to $+858$~$\mu$G;
-    \item mean $|B_\parallel|$: $178$~$\mu$G;
-    \item median $|B_\parallel|$: $116$~$\mu$G;
-    \item standard deviation: $252$~$\mu$G.
+    \item range: $-991$ to $+858$~$\mu$G;
+    \item mean $|B_\parallel|$: $176 \pm 13$~$\mu$G;
+    \item median $|B_\parallel|$: $116 \pm 10$~$\mu$G;
+    \item standard deviation: $245$~$\mu$G.
 \end{itemize}
 
 
-\begin{figure}[!htbp]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=0.98\columnwidth]{BLOS_histogram.pdf}
+\includegraphics[width=0.6\textwidth]{BLOS_histogram.pdf}
 \caption{Distribution of $B_\parallel$ for the 197 ON-cloud sight lines. Blue
 bars indicate positive (toward-observer) fields; red bars indicate negative
 (away-from-observer) fields. The green dashed line marks the median. The
 sample divides 62\% positive to 38\% negative.}
 \label{fig:histogram}
-\end{figure}
+\end{figure*}
+
+% \subsection{Spatial Distribution of Field Directions}
+% \label{sec:signs}
+
+% Of the 197 measurements, 122 (62\%) have positive $B_\parallel$ and 75 (38\%)
+% have negative $B_\parallel$. Using the RM measurement and reference-sample
+% standard-error terms in quadrature,
+% $\sigma_{{\rm RM},i}^2=\delta{\rm RM}_i^2+\sigma_{\rm ref}^2$,
+% 77 positive and 27 negative measurements satisfy
+% $|{\rm RM}_i-{\rm RM}_{\rm ref}|>2\sigma_{{\rm RM},i}$.
+% This conditional sign diagnostic is distinct from the pipeline's total
+% asymmetric field errors. The remaining 93 measurements do not satisfy it.
+
+% The map shows spatially varying proportions of positive and negative fields.
+% Positive fields are concentrated in the northern and western portions of the
+% cloud, while negative fields dominate the southern and eastern regions
+% (Figure~\ref{fig:blos-map}). We distinguish the global sign imbalance from reference-choice sensitivity below.
+
+% The transition between the two regions does not follow a simple boundary.
+% There are localized regions of mixed polarity, particularly along the main
+% filamentary ridge, which may reflect small-scale magnetic structure,
+% variations in line-of-sight geometry, or the sight lines whose signs are not
+% individually significant.
+
+% \subsubsection{Statistical Significance of the Sign Asymmetry}
+% \label{sec:sign-tests}
+
+% A two-sided exact binomial test of 122 positive detections out of 197 against
+% an equal-probability null hypothesis gives $p=9.98\times10^{-4}$.
+
+% This is a descriptive benchmark under independent Bernoulli trials. All
+% cloud RMs share the same subtracted reference: even with independent ON
+% measurement errors, their off-diagonal covariance includes
+% $\operatorname{Cov}({\rm RM}_{{\rm cloud},i},{\rm RM}_{{\rm cloud},j})=
+% \sigma_{\rm ref}^2$ for $i\ne j$. Spatially correlated foreground structure
+% can add further dependence. Consequently the quoted binomial probability
+% is not a calibrated significance for a cloud-scale reversal and does not establish
+% spatial clustering. We therefore treat the north--west versus south--east
+% arrangement as a spatial pattern visible in the map and do not assign it a
+% separate clustering significance without a prespecified spatial statistic.
 
 
-
-
-
-
-
-
-
-\subsection{Spatial Distribution and Direction Uncertainty}
-\label{sec:signs}
-For a positive electron column, field direction depends only on cloud RM.
-We therefore use a separate conditional diagnostic,
-\begin{equation}
-S_i=\frac{{\rm RM}_i-{\rm RM}_{\rm ref}}
-{\sqrt{\delta{\rm RM}_i^2+\sigma_{\rm ref}^2}},
-\label{eq:sign-score}
-\end{equation}
-where $\sigma_{\rm ref}=6.07$~rad~m$^{-2}$ is the reference mean's standard
-error. This diagnostic assumes independent ON measurement errors and a
-Gaussian approximation to the reference-mean error; it is distinct from
-the conservative linear-sum RM term used for field-strength excursions.
-We find 78 sight lines with $S>2$ and 27 with $S<-2$.
-
-We divide the map using the archived extinction-weighted line fit, which
-does not use RM signs. In zero-based FITS pixel coordinates the line is
-$y=-0.323911x+697.042858$. North and south denote positive and negative
-$y$ offsets from that line. Table~\ref{tab:spatial-comparison} gives the counts.
-The positive fraction is 68/92 (74\%) to the north and 55/105 (52\%) to the
-south. Thus, the full sample shows a regional contrast, but the southern
-half is not predominantly negative under this division.
-
-In 20,000 realizations we perturb ON RMs by their measurement errors and
-draw one shared reference RM per realization. The central 95\% range of
-the north-minus-south positive-fraction difference is 0.070--0.326.
-These are conditional propagated-error ranges for a fixed axis and sample,
-not spatial-null probabilities; intrinsic source contributions and spatially
-varying foregrounds are not included. In particular, the global 123/74
-split alone is not a test of a coherent field reversal.
-
-\par
-\input{PaperRevision/tables/spatial_comparison.tex}
-
-\subsection{Reference-Selection Sensitivity}
 \subsubsection{Exhaustive Eight-Point Reference Combinations}
 \label{sec:all-reference-combinations}
 \label{sec:rmref-sensitivity}
@@ -574,30 +507,13 @@ the western part of the map and around RA $\simeq50$--$51^\circ$,
 Dec $\simeq31^\circ$, while a group of negative fields persists in the
 southern cloud.
 
-Among the 189 RM points present in every combination, 78 remain positive
-and 34 remain negative throughout; the other 77 change sign. Thus, the
+Among the 189 RM points present in every combination, 77 remain positive
+and 35 remain negative throughout; the other 77 change sign. Thus, the
 oppositely directed fields in these specific parts of the cloud persist
 despite changes in the reference selection. Their persistence supports
 the spatial variation in field direction, although the precise boundary
 between positive and negative regions remains sensitive to the OFF-point
 choice.
-
-Applying the adopted separation exclusion first leaves 13 candidates and
-$\binom{13}{8}=1287$ fixed-count subsets. Their reference RMs span
-23.5--43.9~rad~m$^{-2}$. We compare only sources remaining ON for every
-subset, including its extinction cut: the 189 common sources include 78
-persistently positive, 40 persistently negative, and 71 reference-sensitive
-directions. These subsets respect the separation exclusion but are not all
-outputs of the stability selector. They define a robustness envelope,
-not a probability distribution over foreground models.
-Figure~\ref{fig:spatial-robustness} compares this persistence map with the
-earlier Faraday measurements.
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.8\textwidth]{spatial_robustness.pdf}
-\caption{Direction persistence across the 1287 separation-eligible eight-point subsets. Blue and red circles retain positive and negative signs, respectively; gray circles change sign. Open squares show the nominal directions from \citet{tahani2018}. The dashed line is the extinction-derived axis. Only the 189 sources that remain ON in every subset enter the persistence counts.}
-\label{fig:spatial-robustness}
-\end{figure*}
 
 \subsubsection{Sensitivity to the ON-Point Extinction Cut}
 \label{sec:on-cut}
@@ -605,238 +521,264 @@ earlier Faraday measurements.
 Keeping the same eight references and chemical model, increasing the
 ON-point multiplier from $m=1$ to $m=3$ raises the observed-extinction cutoff
 from 0.553 to 1.659~mag. The retained sample decreases from 197 to 134
-sight lines, with 88 positive and 46 negative fields (66\% and 34\%).
+sight lines, with 87 positive and 47 negative fields (65\% and 35\%).
 The nominal field value and sign of every retained sight line are identical
 in the two runs: only sample membership changes. The similar positive
 fraction shows that the global sign imbalance is not confined to the
 lowest-extinction sight lines; it is not an independent test of the
 reference RM or of the spatial reversal. We retain $m=1$ for the main
-catalog and use $m=3$ only as this selection check. The revised multiplier-3 uncertainty table is also recomputed using source-ID
-alignment. Its error propagation is consistent with the main revised catalog.
-The north/south sign contrast becomes weaker under this cut
-(Table~\ref{tab:spatial-comparison}).
+catalog and use $m=3$ only as this selection check. Comparisons here use
+nominal fields, not the multiplier-3 uncertainty estimates, whose
+sensitivity tables require alignment by source ID before propagation.
+
+% \subsection{Field Strength versus Extinction}
+% \label{sec:av}
+
+% Figure~\ref{fig:blos-av} shows signed $B_\parallel$ as a function of visual
+% extinction. For $|B_\parallel|$, a Spearman rank correlation over the full sample gives
+% $\rho=-0.524$ with $p<10^{-10}$; restricted to $A_V\leq 3$~mag it gives
+% $\rho=-0.472$ with $p=2.92\times10^{-10}$. These p-values use the usual large-sample
+% approximation and quantify rank association, not an independent magnetic
+% scaling law.
+
+% \begin{figure*}[t]
+% \centering
+% \includegraphics[width=0.6\linewidth]{BLOS_vs_Av.pdf}
+% \caption{Line-of-sight magnetic field $B_\parallel$ versus visual extinction
+% $A_V$. Blue points indicate positive fields; red points indicate negative
+% fields. Error bars show the total uncertainty from the RM measurement,
+% reference RM, extinction, and chemical model contributions. The vertical green
+% line marks the reference extinction threshold.}
+% \label{fig:blos-av}
+% \end{figure*}
+
+% Any interpretation of this relation must account for a correlation that is
+% built into the method. $B_\parallel$ is obtained by dividing
+% $\mathrm{RM_{cloud}}$ by an electron column that is itself derived from $A_V$
+% (Section~\ref{sec:ne}), so $|B_\parallel|$ and $A_V$ are not independent
+% quantities. At fixed $\mathrm{RM_{cloud}}$, the inferred $|B_\parallel|$
+% necessarily decreases as $A_V$ increases. The observed behaviour should
+% therefore be read against this methodological dependence rather than against
+% a null of no correlation.
+
+% With that caveat, the data show a negative rank association and large scatter
+% at all extinctions, where
+% $|B_\parallel|$ ranges from $\sim 10$ to $\sim 800$~$\mu$G at comparable
+% $A_V$. This scatter likely reflects a combination of:
+% \begin{enumerate}
+%     \item genuine small-scale magnetic structure within the cloud;
+%     \item geometric projection effects, since the observed $B_\parallel$
+%     depends on the angle between the total field vector and the line of sight;
+%     \item variations in ionization fraction not captured by a single mean
+%     chemical model, which become more severe at high column density where the
+%     modeled electron abundance is most sensitive to $n_0$ and the cosmic-ray
+%     ionization rate.
+% \end{enumerate}
+
+% % The observed-RM versus cloud-RM figure from the previous draft has been
+% % removed. Because RM_cloud = RM_obs - RM_ref with a single scalar RM_ref,
+% % that plot is a straight line of unit slope by construction and carries no
+% % information. If a figure is wanted in its place, RM_obs versus A_V, or a
+% % sky map of RM_obs with the OFF points marked, would both be informative.
+
+% For context, the cloud RM values span $-73$ to $+61$~rad~m$^{-2}$, with the
+% majority within $\pm 30$~rad~m$^{-2}$ of zero. For most sight lines the cloud
+% contribution is therefore comparable to or smaller than the foreground and
+% background contribution ($\mathrm{RM_{ref}} = 31.6$~rad~m$^{-2}$), which
+% underlines the importance of accurate reference subtraction and motivates the
+% sensitivity test in Section~\ref{sec:rmref-sensitivity}.
 
 
 
+% Table~\ref{tab:summary} summarizes the key results.
 
+% \begin{table*}[t]
+% \centering
+% \caption{Summary of $B_\parallel$ measurements}
+% \label{tab:summary}
+% \begin{tabular}{lc}
+% \toprule
+% Parameter & Value \\
+% \midrule
+% Sources in Paper~I RM catalog & 205 \\
+% Sources within extinction map & 205 \\
+% Reference (OFF) points & 8 \\
+% ON-cloud sight lines & 197 \\
+% \midrule
+% Reference RM (rad~m$^{-2}$) & $31.6 \pm 6.1$ \\
+% Reference RM std.\ dev.\ (rad~m$^{-2}$) & 17.2 \\
+% Reference $A_V$ (mag) & 0.553 \\
+% \midrule
+% $B_\parallel$ range ($\mu$G) & $-991$ to $+858$ \\
+% Mean $|B_\parallel|$ ($\mu$G) & $176 \pm 13$ \\
+% Median $|B_\parallel|$ ($\mu$G) & $116 \pm 10$ \\
+% Std.\ dev.\ ($\mu$G) & 245 \\
+% \midrule
+% Positive $B_\parallel$ (toward) & 122 (62\%) \\
+% Negative $B_\parallel$ (away) & 75 (38\%) \\
+% Significant at $>2\sigma$ (RM terms) & 104 (77 positive, 27 negative) \\
+% Binomial test vs.\ equal split & $p=9.98\times10^{-4}$ \\
+% \midrule
+% ON-cloud $A_V$ range (mag) & 0.65 to 15.6 \\
+% Mean ON-cloud $A_V$ (mag) & 2.43 \\
+% Mean nearest-neighbour separation (arcmin) & 5.30 \\
+% \bottomrule
+% \end{tabular}
+% \end{table*}
 
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Comparison with Previous Faraday Measurements}
-\label{sec:comparison}
-We recovered the 24 Perseus measurements in Table 6 of \citet{tahani2018},
-including their signed fields and asymmetric excursions. Their rounded
-coordinates were first associated with the full-precision \citet{taylor2009}
-catalog, verifying the tabulated RMs. A $10\arcsec$ match to the VLA catalog
-then gives 13 unique associations, all separated by less than $2.2\arcsec$.
-The adopted radius is a positional association criterion, not an assumption
-that the two surveys resolve identical source structure.
-Table~\ref{tab:faraday-comparison} and Figure~\ref{fig:faraday-comparison}
-compare these observations.
+% \subsection{Comparison with Previous Results}
+% \label{sec:comparison}
 
-Eleven of the 13 pairs have the same nominal field sign. The two exceptions
-are published points 4 and 10, corresponding to local IDs 60 and 125.
-Both revised cloud RMs are consistent with zero under Equation~\ref{eq:sign-score},
-so neither pair establishes a significant reversal between epochs or methods.
-The median observed-RM difference, VLA minus NVSS, is
-$-0.16$~rad~m$^{-2}$, although three pairs (published IDs 4, 9, and 10)
-differ by more than three times their quadrature measurement error.
-These residuals require source-level interpretation and cannot be explained
-by changing the cloud reference, because they precede reference subtraction.
-For point 10, for example, observed RM changes from $-8.3$ to
-$+34.92$~rad~m$^{-2}$; its inferred field changes from $-196$ to
-$+16.5~\mu$G. We do not attribute the difference uniquely to intrinsic
-variability, unresolved structure, or an older narrow-band RM ambiguity.
+% Our reference RM of $31.6 \pm 6.1$~rad~m$^{-2}$ is consistent with the
+% $31 \pm 11$~rad~m$^{-2}$ reported by \citet{tahani2018}, demonstrating
+% consistency between our VLA-based analysis and earlier NVSS-based work
+% despite the more than tenfold increase in regional RM source density
+% reported in Paper~I.
 
-The similar reference zero points (our $31.6$~rad~m$^{-2}$ and the
-$31.1$~rad~m$^{-2}$ subtraction implied by the published table) do not
-guarantee agreement of individual cloud RMs. Furthermore, the two field
-analyses share extinction and chemical-model assumptions. Their agreement
-therefore tests reproducibility and consistency more directly than it
-provides independent validation of the electron column.
-The $+136$ and $-90~\mu$G sign-selected, error-weighted averages quoted by
-\citet{tahani2022b} are different statistics from our median absolute field
-of $116~\mu$G; their similar scale is contextual rather than a quantitative
-agreement test.
+% The two uncertainties are not directly comparable, and we are careful not to
+% overstate the improvement. Our $\pm 6.1$~rad~m$^{-2}$ is the standard error of
+% the mean of 8 reference measurements, while our reference sample scatter is
+% 17.2~rad~m$^{-2}$. We therefore do not interpret the difference between these quoted errors
+% as a like-for-like improvement in precision.
 
-\par
-\input{PaperRevision/tables/faraday_comparison.tex}
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{faraday_comparison.pdf}
-\caption{Positional associations with earlier Perseus observations. Left: observed RMs, before cloud-reference subtraction. Right: published and revised signed fields. Dashed lines mark equality. Orange denotes a nonzero Paper I quality flag; blue denotes F1=F2=0. Selected labels identify points in the 2018 table. The upward arrow on point 2 denotes unbounded extinction sensitivity, not a finite upper uncertainty. Field excursions are model sensitivities, not Gaussian confidence intervals.}
-\label{fig:faraday-comparison}
-\end{figure*}
+% Most importantly, our analysis confirms the spatial pattern of $B_\parallel$
+% previously inferred from sparse sampling: predominantly positive fields in the
+% north and west transitioning to negative fields in the south and east. This
+% reversal was a key input to the 3D magnetic field reconstruction of
+% \citet{tahani2022b}, and our densely sampled map both supports that
+% interpretation and reveals additional complexity in the transition region.
 
-\subsection{Local Zeeman and Plane-of-Sky Comparisons}
-\label{sec:zeeman}
-We recover the original Barnard~1 observing position from Figure~1 of
-\citet{goodman1989measurement}: $03^{\rm h}30^{\rm m}12^{\rm s}$,
-$+30^\circ57\arcmin26\arcsec$ in B1950. Transforming FK4 B1950 to ICRS gives
-$(53.32429^\circ,31.12499^\circ)$. This differs from the approximately
-$51.32^\circ$ RA quoted in the later Faraday paper; the original observing
-position is used here. The nearest VLA sight line is local ID 169, offset
-by $9.54\arcmin$, with a nominal field of $+21.5~\mu$G. Although its sign
-and magnitude resemble the $+27\pm4~\mu$G Zeeman result, it lies well outside
-the $2.9\arcmin$ FWHM Arecibo beam. This is a regional comparison and cannot
-validate equality of the fields in the same gas.
+% \subsection{Are the Inferred Field Strengths Physically Plausible?}
+% \label{sec:plausibility}
 
-For L1448-CO and L1448-COe, we use the J2000 positions and OH fields in
-\citet{troland2008magnetic}. The nearest VLA sight line to both is ID 55,
-at separations of $9.90\arcmin$ and $12.73\arcmin$, compared with a
-$3\arcmin$ FWHM beam. It has F2=1 and a nominal $B_\parallel=+104.6~\mu$G.
-Neither pointing has a VLA counterpart within its half-power radius.
-Consequently these observations establish no direct, beam-matched Zeeman
-test of our field strengths. Table~\ref{tab:zeeman-comparison} and
-Figure~\ref{fig:zeeman-local} make the spatial mismatch explicit.
+% The mean and median $|B_\parallel|$ reported here, 176 and 116~$\mu$G, are
+% large enough to warrant careful assessment of the electron-column model.
+% The Zeeman-based analysis of \citet{crutcher2010magnetic} infers a
+% density-dependent upper envelope of total magnetic field strengths, not a
+% universal relation for individual $B_\parallel$ measurements. Its volume
+% density dependence cannot be compared directly with the mean extinction of
+% our sample ($\langle A_V \rangle = 2.43$~mag) without an additional
+% geometrical model connecting column and volume density.
 
-Dust-polarization estimates in Barnard~1, IC~348, and SVS~13A constrain
-$B_\perp$ on their respective spatial scales
-\citep{coude2019jcmt,choi2024jcmt,cortes2025first}. We use them to establish
-physical context, without combining unmatched $B_\perp$ and $B_\parallel$
-values into a total field or inclination angle.
+% The high values should therefore be interpreted as model-dependent
+% Faraday-weighted field estimates rather than direct measurements of the dense
+% gas traced by Zeeman splitting. Faraday rotation can weight ionized envelope
+% material over a long path, while Zeeman observations select specific
+% transitions and density regimes. The electron-column model and the scalar
+% reference subtraction are additional sources of systematic uncertainty.
 
-\par
-\input{PaperRevision/tables/zeeman_comparison.tex}
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{zeeman_local_maps.pdf}
-\caption{VLA sight lines around the original Arecibo Zeeman pointings. Stars mark the pointings and circles their half-power radii (FWHM/2). Blue/red dots denote nominal toward/away VLA fields; labels are local IDs. The pointing locations, rather than the cloud-wide field distribution, determine the relevant comparison.}
-\label{fig:zeeman-local}
-\end{figure*}
+% \subsection{Implications for Cloud Magnetic Structure}
 
-\subsection{Sensitivity to Source Quality}
-The cross-match to the published Paper I table supplies the diffuse-emission
-flag F1 and Faraday-complexity flag F2. Requiring F1=F2=0 leaves 128 ON
-sight lines, with 76 positive and 52 negative nominal fields and a median
-absolute field of $109~\mu$G. We deliberately use a conservative cut that
-also removes F1=2, even though that class exceeds the diffuse-mask polarized
-intensity threshold. With the reference held fixed, the positive fractions
-are 43/54 (80\%) north of the extinction-derived axis and 33/74 (45\%) south.
-Their difference has a conditional propagated central 95\% range of
-0.198--0.447 under the shared-reference simulation. Thus the regional
-contrast is not produced solely by the flagged ON sources.
+% The 62/38 split between positive and negative $B_\parallel$ indicates that
+% the magnetic field in Perseus does not have a uniform orientation along the
+% line of sight. The spatial segregation of field directions, rather than random
+% intermixing, suggests that this variation reflects large-scale magnetic
+% structure rather than small-scale turbulent fluctuations.
 
-Seven of the eight adopted references also satisfy F1=F2=0. Recomputing
-the scalar mean from those seven gives $32.91$~rad~m$^{-2}$ and changes six
-nominal signs in the full ON sample. This is a reference-quality sensitivity
-test, not a new stability-selected reference solution. The numerical output
-also recomputes field strengths using the corresponding mean reference
-extinction.
+% \citet{tahani2022b} interpreted the $B_\parallel$ reversal as evidence for an
+% interaction between two distinct magnetic field systems, possibly associated
+% with compression by the Per-Tau supershell from one direction and a second,
+% previously unidentified structure from another. Our densely sampled map is
+% consistent with this picture. We note, however, that the width of the
+% transition region between positive and negative fields cannot yet be measured:
+% the nonuniform sight-line sampling and reference-sensitive signs do not
+% by themselves provide an upper limit on its width. A quantitative constraint
+% would require an explicit spatial model and treatment of foreground covariance.
+% Further constraints would benefit from a deeper survey with higher
+% polarized source density or complementary tracers within the transition zone.
 
-\subsection{Foreground Structure and Limits on Morphology}
-Reference-subset experiments vary a single scalar zero point. They do not
-test a spatially varying foreground. As a diagnostic, we fit an unweighted
-plane to the eight reference RMs using angular coordinates
-$x=(\alpha-52^\circ)\cos31^\circ$ and $y=\delta-31^\circ$, expressed in degrees:
-\begin{equation}
-{\rm RM}_{\rm plane}=51.18-1.04x+20.16y
-\quad {\rm rad\,m^{-2}}.
-\end{equation}
-Leave-one-reference-out prediction gives RMS residuals of 10.3~rad~m$^{-2}$
-for the plane and 18.4~rad~m$^{-2}$ for a constant mean. However, only 44 of
-197 ON positions lie inside the references' convex hull, so most plane
-predictions are extrapolations. Subtracting this plane changes 74 nominal
-field signs. These eight references do not validate the plane as a physical
-foreground model, but its effect demonstrates that scalar-reference
-persistence is insufficient to establish foreground-independent geometry.
+% The large scatter in $|B_\parallel|$ at high extinction
+% (Section~\ref{sec:av}) may indicate that the ordered large-scale field is
+% accompanied by small-scale tangled or turbulent components, or that projection
+% effects become increasingly important as sight lines traverse longer paths
+% through the cloud. Disentangling these will require comparison with
+% plane-of-sky field measurements from dust polarization.
 
-The observed north/south contrast and persistent opposite-sign groups are
-qualitatively compatible with the earlier suggestion of changing field
-direction across Perseus. They do not independently establish the concave
-three-dimensional morphology inferred by \citet{tahani2022b}, or uniquely
-select a shock--cloud interaction history. A quantitative reconstruction
-requires wider OFF-cloud coverage, a constrained spatial foreground, and
-matched plane-of-sky observations. We do not infer a transition width from
-the sight-line spacing.
+% \subsection{Limitations and Future Work}
 
-\subsection{Field-Strength Interpretation and Remaining Limitations}
-The corrected median and mean absolute fields are $116$ and $178~\mu$G.
-These are summaries of nominal, electron-weighted estimates. They should
-not be interpreted as a population of uniformly precise detections:
-13 sight lines have unbounded magnitude sensitivity when the local
-extinction window reaches zero cloud extinction. The numerical correction
-is small for the median but larger for individual shallow sight lines.
-Uncertainty in the foreground, the extinction-to-column conversion, the
-chemical model, and the assumed symmetric geometry remains shared or
-systematic and is not removed by increasing the number of sources.
+% Several systematic uncertainties affect our $B_\parallel$ measurements.
 
-Because extinction enters the denominator through the electron-column
-model, a correlation between $|B_\parallel|$ and $A_V$ cannot by itself
-establish a physical magnetic scaling law. Similarly, an extinction
-measurement is a column-density proxy and cannot be substituted for the
-volume density in the Zeeman-based field--density analysis of
-\citet{crutcher2010magnetic}. The precise provenance and effective angular
-resolution of the reprocessed extinction map remain to be confirmed
-before submission; its FITS header alone does not establish these properties. The present numerical tables preserve these limitations
-explicitly rather than interpreting literature compatibility as validation.
+% \begin{enumerate}
+%     \item \textbf{A single scalar reference RM.} Over a $13.8$~deg$^2$ field,
+%     the Galactic foreground RM is not necessarily constant, and our reference
+%     sample itself spans 6.0 to 58.6~rad~m$^{-2}$. A spatially varying
+%     foreground model would be preferable. We leave comparison with a spatially
+%     varying Galactic Faraday-sky reconstruction to future work.
 
+%     \item \textbf{Chemical model assumptions.} The adopted $n_0$, $T_0$, and
+%     $G_0$ represent typical conditions but may not capture local variations in
+%     density, temperature, or UV field strength. Our sensitivity analysis,
+%     varying temperature by $\pm20\%$ and density by $\pm50\%$, probes a
+%     limited model grid rather than all possible ionization structures. We
+%     do not assign a universal fractional error contribution to these terms.
 
+%     \item \textbf{Electron column density geometry.} The plane-parallel,
+%     front--back symmetric slab model is an idealization. Real molecular clouds
+%     have complex 3D structure that affects both the total electron column and
+%     the weighting of different field components along the line of sight.
 
+%     \item \textbf{RM complexity.} Some sight lines may contain multiple
+%     Faraday-rotating components, for example intervening H~II regions, that
+%     are not resolved by RM Synthesis. Paper~I reports a Faraday-depth
+%     resolution of approximately $98$~rad~m$^{-2}$; this is a component
+%     separation scale, not the uncertainty of an isolated RM peak.
+%     Its F1/F2 flags identify potential diffuse-emission contamination and
+%     resolved Faraday complexity. A flag-based sensitivity analysis is still
+%     needed for the present full-sample results. Varying the OFF reference
+%     alone does not test source-specific polarization contamination.
+% \end{enumerate}
 
+% A full 3D magnetic field reconstruction combining our $B_\parallel$ map with
+% plane-of-sky polarization measurements from \textit{Planck} or ground-based
+% observations is left to future work. Such an analysis would provide stronger
+% constraints on the field geometry and could test specific predictions of the
+% interacting-structure formation scenario.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusions}
 \label{sec:conclusions}
 
-We derive revised Faraday-based field estimates for 197 sight lines using
-the published Perseus sample, an explicit interpolation for one extinction
-pixel, and eight OFF references. The main results are:
-\begin{enumerate}
-\item The corrected median absolute field is $116~\mu$G. Numerical boundary
-corrections preserve every nominal sign but change some shallow-source
-strengths appreciably. Thirteen extinction sensitivity ranges allow an
-unbounded field magnitude.
-\item Thirteen positional associations with the earlier Faraday catalog
-give 11 nominal sign agreements. Three observed-RM differences exceed
-three times the combined catalog measurement error; the two nominal
-field-sign disagreements are inconclusive in the revised RM-based
-direction diagnostic.
-\item Of 189 sight lines common to all 1287 separation-eligible eight-point
-reference subsets, 78 remain positive and 40 remain negative. The positive
-fraction is higher north of an independently extinction-derived axis,
-including after a conservative Paper I quality cut. This is evidence for
-spatial variation conditional on the adopted foreground treatment.
-\item None of the VLA sight lines lies within the Arecibo half-power beam
-at the three Zeeman pointings examined. These data therefore provide
-regional context rather than direct local validation of field strength.
-\item A spatial foreground-plane diagnostic changes 74 nominal signs.
-The denser RM sampling constrains the observed pattern, but additional
-foreground information is required for a robust cloud-only reversal or
-three-dimensional interpretation. The extinction-product provenance must also be confirmed before final release.
-\end{enumerate}
+% We have presented line-of-sight magnetic field measurements across the Perseus
+% Molecular Cloud derived from VLA Faraday rotation observations of 197
+% background polarized sources. Our main conclusions are:
+
+% \begin{enumerate}
+%     \item The reference RM for the Perseus region is
+%     $31.6 \pm 6.1$~rad~m$^{-2}$ (standard error), with a reference sample
+%     scatter of 17.2~rad~m$^{-2}$, consistent with previous estimates based on
+%     lower-density RM catalogs.
+
+%     \item The derived $B_\parallel$ values range from $-991$ to
+%     $+858$~$\mu$G, with a median absolute strength of 116~$\mu$G. The
+%     absolute strengths are broad and model-dependent.
+
+%     \item The spatial distribution of field directions shows a coherent
+%     pattern: 122 of 197 sight lines (62\%) have positive (toward-observer)
+%     fields concentrated in the northern and western cloud regions, while 75
+%     (38\%) have negative fields in the south and east. A two-sided exact
+%     binomial test gives $p=9.98\times10^{-4}$. The sign split is sensitive to
+%     the reference zero point, which is set by the stability analysis. This
+%     supports the field reversal previously reported at
+%     lower sampling density.
+
+%     \item The width of the transition between the two field regions is not
+%     constrained quantitatively here; an explicit spatial model is required.
+
+%     \item The inferred absolute field strength has a negative rank association
+%     with $A_V$ ($\rho=-0.524$ overall), but this association is partly induced
+%     by the dependence of the modeled electron column on $A_V$.
+
+%     \item Our map provides the most densely sampled $B_\parallel$
+%     measurements of the PMC to date and new observational constraints on its
+%     magnetic field structure and formation history.
+% \end{enumerate}
 
 
-
-
-
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Software}
 
 This analysis used \texttt{MC-BLOS} v1.0 \citep{tahani2025mcblos},
@@ -845,20 +787,24 @@ Python 3.9, NumPy \citep{harris2020array}, SciPy, Pandas
 Matplotlib \citep{hunter2007matplotlib}, and Astropy
 \citep{astropy2022astropy}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{acknowledgments}
-H.H. acknowledges the use of Claude (Anthropic) and Codex (OpenAI) for assistance with code
+H.H. acknowledges the use of Claude (Anthropic) for assistance with code
 development and debugging for the MC-BLOS analysis pipeline, \LaTeX{}
 formatting, and language editing of the manuscript. All scientific analysis,
 interpretation, and conclusions are those of the authors, who take full
 responsibility for the content of this work.
 \end{acknowledgments}
 
-\bibliographystyle{aasjournalv7}
+\bibliographystyle{aasjournal}
 \bibliography{main}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% APPENDIX - Full Data Catalog
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
 
-\section{Complete \texorpdfstring{$B_\parallel$}{B parallel} Catalog}
+\section{Complete $B_\parallel$ Catalog}
 \label{app:catalog}
 
 Table~\ref{tab:blos-catalog} presents the complete catalog of all 197
@@ -866,15 +812,12 @@ $B_\parallel$ measurements. For each sight line we give the local MC-BLOS
 matched-catalog identifier, J2000 equatorial coordinates, visual extinction,
 the observed rotation measure and its uncertainty from our
 VLA survey, the derived line-of-sight magnetic field, and the upper and lower
-uncertainties on $B_\parallel$. The asymmetric excursions combine RM, extinction, and chemical sensitivities
-as described in Section~\ref{sec:method}. They are not Gaussian intervals;
-infinite entries denote an unbounded extinction-related magnitude excursion.
-The published source identifiers and quality flags are retained in the
-machine-readable cross-match, with the interpolated source identified explicitly.
+uncertainties on $B_\parallel$. The asymmetric uncertainties arise from the
+combination of RM measurement errors, which can change the sign of the derived
+field, and extinction and chemical model uncertainties, which affect only the
+magnitude.
 
 
-
-\par
-\input{PaperRevision/tables/corrected_full_catalog.tex}
+\input{blos_full_catalog_table.tex}
 
 \end{document}

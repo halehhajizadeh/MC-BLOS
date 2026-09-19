@@ -13,7 +13,12 @@ cloud = configStartSettings['Cloud'].get('Cloud')
 # Judgement
 fillMissingExtinct = configStartSettings['Judgement - Extinction Map'].get('Fill Initial Nan Data')
 useFillExtinct = configStartSettings['Judgement - Extinction Map'].getboolean('Use Filled Values in RM-Extinction Matching')
-doInterpExtinct = configStartSettings['Judgement - Extinction Map'].getboolean('Interpolate Negative Extinction Values')
+# Accept the name written by the configuration generator, with the older
+# spelling retained for existing user configurations.
+_extinction_settings = configStartSettings['Judgement - Extinction Map']
+doInterpExtinct = _extinction_settings.getboolean(
+    'Interpolate Non-Physical (Negative) Extinction',
+    fallback=_extinction_settings.getboolean('Interpolate Negative Extinction Values', fallback=False))
 interpRegion = configStartSettings['Judgement - Extinction Map'].get('Interpolate Area')
 interpMethod = configStartSettings['Judgement - Extinction Map'].get('Interpolation Method')
 

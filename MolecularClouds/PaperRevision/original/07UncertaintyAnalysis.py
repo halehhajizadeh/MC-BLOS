@@ -2,8 +2,6 @@
 This is the seventh stage of the BLOSMapping method where the uncertainties in the BLOS values are calculated
 """
 import pandas as pd
-import numpy as np
-from LocalLibraries.Uncertainty import align_fields
 from LocalLibraries.RegionOfInterest import Region
 import LocalLibraries.config as config
 
@@ -99,8 +97,8 @@ for densPercent in DensPercent:
     BData_DensityIncrease = pd.read_csv(BData_DensityIncreasePath, sep=config.dataSeparator)
     BData_DensityDecrease = pd.read_csv(BData_DensityDecreasePath, sep=config.dataSeparator)
 
-    BChemDensIncrease = list(align_fields(BData, BData_DensityIncrease))
-    BChemDensDecrease = list(align_fields(BData, BData_DensityDecrease))
+    BChemDensIncrease = list(BData_DensityIncrease['Magnetic_Field(uG)'])
+    BChemDensDecrease = list(BData_DensityDecrease['Magnetic_Field(uG)'])
 
     if (BData_DensityIncrease.isnull().values.any() or BData_DensityDecrease.isnull().values.any()) and config.useUncertaintyNans is False:
         errDensPercent.append(densPercent)
@@ -128,10 +126,10 @@ for tempPercent in TempPercent:
     BData_TempIncrease = pd.read_csv(BData_TempIncreasePath, sep=config.dataSeparator)
     BData_TempDecrease = pd.read_csv(BData_TempDecreasePath, sep=config.dataSeparator)
 
-    BChemTempIncrease = list(align_fields(BData, BData_TempIncrease))
-    BChemTempDecrease = list(align_fields(BData, BData_TempDecrease))
+    BChemTempIncrease = list(BData_TempIncrease['Magnetic_Field(uG)'])
+    BChemTempDecrease = list(BData_TempDecrease['Magnetic_Field(uG)'])
 
-    if (BData_TempIncrease.isnull().values.any() or BData_TempDecrease.isnull().values.any()) and config.useUncertaintyNans is False:
+    if BData_TempIncrease.isnull().values.any() or BData_TempDecrease.isnull().values.any() and config.useUncertaintyNans is False:
         errTempPercent.append(tempPercent)
     else:
         break
@@ -175,12 +173,12 @@ for index in range(len(BData)):
     BUpperUncertainty = round(((TotalRMErrStDevinB[index]) ** 2 + upperDeltaBExt ** 2 + upperDeltaBChemDens ** 2 + upperDeltaBChemTemp ** 2) ** (1 / 2), 0)
     BLowerUncertainty = round(((TotalRMErrStDevinB[index]) ** 2 + lowerDeltaBExt ** 2 + lowerDeltaBChemDens ** 2 + lowerDeltaBChemTemp ** 2) ** (1 / 2), 0)
     #Avoid overestimating the uncertainty. The propagated uncertainty should not cause the uncertainty to be able to flip the sign, if it cannot already do that.
-    BUpperUncertainty = abs(BData['Magnetic_Field(uG)'][index]+1) if np.isfinite(BUpperUncertainty) and abs(BUpperUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) \
+    BUpperUncertainty = abs(BData['Magnetic_Field(uG)'][index]+1) if abs(BUpperUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) \
                                                                      and abs(TotalRMErrStDevinB[index]) < abs(BData['Magnetic_Field(uG)'][index]) \
-                                                                     and BData['Scaled_RM'][index] < 0 else BUpperUncertainty #TotalRMErrStDevinB[index] if np.isfinite(BUpperUncertainty) and abs(BUpperUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) and BData['Scaled_RM'][index] < 0 else BUpperUncertainty
-    BLowerUncertainty = abs(BData['Magnetic_Field(uG)'][index]-1) if np.isfinite(BLowerUncertainty) and abs(BLowerUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) \
+                                                                     and BData['Scaled_RM'][index] < 0 else BUpperUncertainty #TotalRMErrStDevinB[index] if abs(BUpperUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) and BData['Scaled_RM'][index] < 0 else BUpperUncertainty
+    BLowerUncertainty = abs(BData['Magnetic_Field(uG)'][index]-1) if abs(BLowerUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) \
                                                                      and abs(TotalRMErrStDevinB[index]) < abs(BData['Magnetic_Field(uG)'][index]) \
-                                                                     and BData['Scaled_RM'][index] > 0 else BLowerUncertainty #TotalRMErrStDevinB[index] if np.isfinite(BLowerUncertainty) and abs(BLowerUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) and BData['Scaled_RM'][index] > 0 else BLowerUncertainty
+                                                                     and BData['Scaled_RM'][index] > 0 else BLowerUncertainty #TotalRMErrStDevinB[index] if abs(BLowerUncertainty) > abs(BData['Magnetic_Field(uG)'][index]) and BData['Scaled_RM'][index] > 0 else BLowerUncertainty
     #Append the uncertainty to the list.
     BTotalUpperUncertainty.append("{0:.0f}".format(BUpperUncertainty))
     BTotalLowerUncertainty.append("{0:.0f}".format(BLowerUncertainty))

@@ -78,32 +78,37 @@ print(f"Mean extinction: {extinction.mean():.2f} mag")
 # ==============================================================================
 # PLOT 1: Histogram of B_parallel values
 # ==============================================================================
-fig, ax = plt.subplots(figsize=(8, 6))
-
-# Create histogram with separate colors for positive and negative
-bins = np.linspace(min(-500, B_parallel.min()), max(500, B_parallel.max()), 41)
-ax.hist(B_parallel[B_parallel > 0], bins=bins, alpha=0.7, color='royalblue',
-        label=r'$B_\parallel > 0$ (toward)', edgecolor='navy', linewidth=0.5)
-ax.hist(B_parallel[B_parallel < 0], bins=bins, alpha=0.7, color='firebrick',
-        label=r'$B_\parallel < 0$ (away)', edgecolor='darkred', linewidth=0.5)
-
-ax.axvline(0, color='black', linestyle='--', linewidth=1.5, alpha=0.7)
-ax.axvline(np.median(B_parallel), color='green', linestyle=':', linewidth=2,
-           label=f'Median = {np.median(B_parallel):.0f} µG')
-
-ax.set_xlabel(r'$B_\parallel$ (µG)')
-ax.set_ylabel('Number of Sources')
-ax.set_title('Distribution of Line-of-Sight Magnetic Field')
-ax.legend(loc='upper right')
-ax.set_xlim(bins[0], bins[-1])
-
-# Add statistics text box
-stats_text = f'N = {len(B_parallel)}\n'
-stats_text += f'Mean = {np.mean(B_parallel):.0f} µG\n'
-stats_text += f'Median = {np.median(B_parallel):.0f} µG\n'
-stats_text += f'Std = {np.std(B_parallel):.0f} µG'
-ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=11,
-        verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+from matplotlib.ticker import MaxNLocator, MultipleLocator
+with plt.rc_context({'font.serif': ['Times New Roman', 'DejaVu Serif', 'serif'],
+                     'mathtext.fontset': 'stix'}):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    # Fixed-width bins with zero on a bin edge; retain the entire field range.
+    bin_width = 50.0
+    extent = bin_width * np.ceil(np.max(np.abs(B_parallel)) / bin_width)
+    bins = np.arange(-extent, extent + bin_width, bin_width)
+    counts, _ = np.histogram(B_parallel, bins=bins)
+    assert counts.sum() == len(B_parallel)
+    ax.hist(B_parallel[B_parallel < 0], bins=bins, color='#c65b52',
+            edgecolor='white', linewidth=0.65,
+            label=rf'Away ($B_\parallel<0$): {negative}')
+    ax.hist(B_parallel[B_parallel >= 0], bins=bins, color='#397bb5',
+            edgecolor='white', linewidth=0.65,
+            label=rf'Toward ($B_\parallel>0$): {positive}')
+    ax.axvline(0, color='0.25', linestyle='--', linewidth=1.1)
+    ax.set_xlabel(r'$B_\parallel$ ($\mu$G)')
+    ax.set_ylabel('Number of sources')
+    ax.set_xlim(-extent, extent)
+    ax.set_ylim(0, counts.max() * 1.28)
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.xaxis.set_major_locator(MultipleLocator(250))
+    ax.set_axisbelow(True)
+    ax.grid(axis='y', color='0.92', linewidth=0.7)
+    ax.spines[['top', 'right']].set_visible(False)
+    ax.tick_params(direction='out')
+    ax.legend(loc='upper right', frameon=False)
+    ax.text(0.025, 0.96, f'{len(B_parallel)} ON sources\n'
+            + r'Bin width: 50 $\mu$G', transform=ax.transAxes,
+            va='top', fontsize=11, color='0.25')
 
 plt.tight_layout()
 plt.savefig(os.path.join(plots_dir, 'BLOS_histogram.png'), bbox_inches='tight')
@@ -271,18 +276,17 @@ print("REFERENCE POINTS TABLE (LaTeX format)")
 print("="*60)
 
 ref_table_latex = r"""
-\begin{deluxetable*}{cccccccc}
+\begin{deluxetable*}{cccccc}
 \tablecaption{Selected reference (OFF) points\label{tab:reference-points}}
 \tablewidth{0pt}
 \tablehead{
-\colhead{ID} & \colhead{RA} & \colhead{Dec} & \colhead{RM} & \colhead{$\delta$RM} & \colhead{$A_V$} & \colhead{$l$} & \colhead{$b$} \\
-\colhead{} & \colhead{(deg)} & \colhead{(deg)} & \colhead{(rad~m$^{-2}$)} & \colhead{(rad~m$^{-2}$)} & \colhead{(mag)} & \colhead{(deg)} & \colhead{(deg)}
+\colhead{ID} & \colhead{RA} & \colhead{Dec} & \colhead{RM} & \colhead{$\delta$RM} & \colhead{$A_V$} \\
+\colhead{} & \colhead{(deg)} & \colhead{(deg)} & \colhead{(rad~m$^{-2}$)} & \colhead{(rad~m$^{-2}$)} & \colhead{(mag)}
 }
 \startdata
 """
 
 for idx, row in selected_ref.iterrows():
-    # Simple galactic coordinate approximation (for actual paper, use proper conversion)
     ra_val = row['Ra(deg)']
     dec_val = row['Dec(deg)']
     rm_val = row['Rotation_Measure(rad/m2)']
@@ -290,7 +294,7 @@ for idx, row in selected_ref.iterrows():
     av_val = row['Extinction_Value']
     source_id = row['ID#']
 
-    ref_table_latex += f"{source_id} & {ra_val:.3f} & {dec_val:.3f} & {rm_val:.1f} & {rm_err:.1f} & {av_val:.2f} & -- & -- \\\\\n"
+    ref_table_latex += f"{source_id} & {ra_val:.3f} & {dec_val:.3f} & {rm_val:.1f} & {rm_err:.1f} & {av_val:.2f} \\\\\n"
 
 ref_table_latex += r"""\enddata
 \tablecomments{The """ + str(n_ref) + r""" reference points selected with stability analysis and spatial separation. The reference RM is """ + f"{rm_ref:.1f}" + r""" $\pm$ """ + f"{rm_ref_sem:.1f}" + r"""~rad~m$^{-2}$ (standard deviation """ + f"{rm_ref_std:.1f}" + r"""~rad~m$^{-2}$).}

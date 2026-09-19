@@ -33,3 +33,18 @@ PROJECT_NOTES.md
 
 # Local broken alias; cloud settings use perseus_combined.ini
 MolecularClouds/Data/CloudParameters/Perseus_Combined
+
+# Generated paper-revision products and downloaded literature cache
+MolecularClouds/paper2_haleh.pdf
+MolecularClouds/PaperRevision/build/
+MolecularClouds/PaperRevision/corrected/
+MolecularClouds/PaperRevision/plots/
+MolecularClouds/PaperRevision/tables/
+MolecularClouds/PaperRevision/paper_revision_bundle/
+MolecularClouds/PaperRevision/paper_revision_bundle.zip
+MolecularClouds/PaperRevision/original/*.pdf
+MolecularClouds/PaperRevision/sources/*.pdf
+MolecularClouds/PaperRevision/sources/*.zip
+MolecularClouds/PaperRevision/sources/*.txt
+!MolecularClouds/PaperRevision/sources/paper1_published_table2.txt
+!MolecularClouds/PaperRevision/sources/paper1_rm_catalog.txt

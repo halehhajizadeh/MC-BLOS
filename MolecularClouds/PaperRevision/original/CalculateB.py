@@ -34,16 +34,13 @@ def electronColumnDensity(Av, eAbundance, indLayerOfInterest, ScaledExtinction):
             for index3 in range(1, val):
                 tempSumAvSubXe = tempSumAvSubXe + ((Av[index3] - Av[index3 - 1]) * eAbundance[index3])
             # Interpolate:
-            # np.interp requires increasing extinction coordinates.
-            xp = [Av[val - 1], Av[val]]
-            fp = [eAbundance[val - 1], eAbundance[val]]
+            xp = [Av[val], Av[val - 1]]
+            fp = [eAbundance[val], eAbundance[val - 1]]
             interpAv = (ScaledExtinction[i] / 2)
             interpEAbund = np.interp(interpAv, xp, fp)
             tempSumAvSubXe = tempSumAvSubXe + ((Av[0]) * eAbundance[0]) + (interpAv - Av[val - 1]) * interpEAbund
         else:
-            # A sight line shallower than the first grid point traverses only
-            # part of that layer. Hold its abundance constant to the surface.
-            tempSumAvSubXe = max(0.0, ScaledExtinction[i] / 2) * eAbundance[0]
+            tempSumAvSubXe = tempSumAvSubXe + ((Av[0]) * eAbundance[0])
         LayerNe.append(tempSumAvSubXe * conversionFactor)
     return LayerNe
     # -------- Matched Extinction Value.
@@ -157,7 +154,6 @@ def CalculateB(AvAbundancePath, ExtincRMPoints, fiducialRM, fiducialRMAvgErr, fi
     # -------- CALCULATE THE TOTAL ELECTRON COLUMN DENSITY. -------
 
     # -------- CALCULATE THE MAGNETIC FIELD --------
-    BLOSData['Electron_Column_pc_cm3'] = np.array(LayerNe) * pcTocm * 2
     BLOSData['Raw_Magnetic_FieldMagnetic_Field(uG)'] = BLOSData['RM_Raw_Value'] / (
             0.812 * np.array(LayerNe) * pcTocm * 2)
 
