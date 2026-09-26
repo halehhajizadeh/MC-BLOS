@@ -12,6 +12,7 @@ MolecularClouds/FileOutput*/**
 !MolecularClouds/FileOutput*/**/
 !MolecularClouds/FileOutput*/**/.gitkeep
 MolecularClouds/Statistics/
+MolecularClouds/Data/
 MolecularClouds/outputs/
 MolecularClouds/output/
 MolecularClouds/outputs*/
@@ -52,5 +53,3 @@ MolecularClouds/PaperRevision/original/*.pdf
 MolecularClouds/PaperRevision/sources/*.pdf
 MolecularClouds/PaperRevision/sources/*.zip
 MolecularClouds/PaperRevision/sources/*.txt
-!MolecularClouds/PaperRevision/sources/paper1_published_table2.txt
-!MolecularClouds/PaperRevision/sources/paper1_rm_catalog.txt
