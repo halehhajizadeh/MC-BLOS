@@ -49,10 +49,12 @@ def add_weighted_statistics(row,prefix,x,weights):
     prefix=f'{prefix}_' if prefix else ''
     x=np.asarray(x,dtype=float);weights=np.asarray(weights,dtype=float)
     if len(x)==0:
+        row[f'{prefix}weighted_n' if prefix else 'weighted_n']=0
         for name in ('mean','median'):
             row[f'{prefix}weighted_{name}_B_uG']=None
             row[f'{prefix}weighted_{name}_bootstrap_sd_uG']=None
         return
+    row[f'{prefix}weighted_n' if prefix else 'weighted_n']=int(len(x))
     row[f'{prefix}weighted_mean_B_uG']=float(np.average(x,weights=weights))
     row[f'{prefix}weighted_median_B_uG']=median_weighted(x,weights)
     mean_sd,median_sd=weighted_bootstrap(x,weights)
@@ -128,6 +130,8 @@ Shared reference/model systematics and spatial correlations are not modeled.
 Effective weighted N measures weight concentration, not physical independence.
 Subset rows overlap their parent catalogs; no independent comparison is implied.
 Reference-RM weighting is distinct from weighting the final BLOS measurements.
+The CSV is tidy: each dataset has one row for all signed fields, positive fields,
+negative fields, and absolute magnitudes; all error columns are bootstrap SDs.
 '''
 
 def display(rows):
@@ -163,7 +167,46 @@ def display(rows):
 
 def save(folder,rows):
     folder.mkdir(exist_ok=True)
-    pd.DataFrame(rows).to_csv(folder/'statistics_summary.csv',index=False)
+    tidy=[]
+    for r in rows:
+        groups=[
+            ('all_signed','n_finite_fields'),
+            ('positive','positive_n'),
+            ('negative','negative_n'),
+            ('all_magnitudes','n_finite_fields'),
+        ]
+        for group,n_key in groups:
+            if group=='all_signed':
+                ordinary=''; weighted='weighted_'
+            elif group=='all_magnitudes':
+                ordinary='mean_abs'; weighted='weighted_mean_abs'
+            else:
+                ordinary=f'{group}_'; weighted=f'{group}_weighted_'
+            if group=='all_magnitudes':
+                mean_key='mean_abs_B_uG'; mean_error_key='mean_abs_bootstrap_sd_uG'
+                median_key='median_abs_B_uG'; median_error_key='median_abs_bootstrap_sd_uG'
+                weighted_mean_key='weighted_mean_abs_B_uG'; weighted_mean_error_key='weighted_mean_abs_bootstrap_sd_uG'
+                weighted_median_key='weighted_median_abs_B_uG'; weighted_median_error_key='weighted_median_abs_bootstrap_sd_uG'
+            else:
+                mean_key=f'{ordinary}mean_B_uG'; mean_error_key=f'{ordinary}mean_bootstrap_sd_uG'
+                median_key=f'{ordinary}median_B_uG'; median_error_key=f'{ordinary}median_bootstrap_sd_uG'
+                weighted_mean_key=f'{weighted}mean_B_uG'; weighted_mean_error_key=f'{weighted}mean_bootstrap_sd_uG'
+                weighted_median_key=f'{weighted}median_B_uG'; weighted_median_error_key=f'{weighted}median_bootstrap_sd_uG'
+            tidy.append({
+                'dataset':r['dataset'],
+                'field_group':group,
+                'n_sources':r[n_key],
+                'n_sources_with_valid_errors':r.get('weighted_n' if group=='all_signed' or group=='all_magnitudes' else f'{group}_weighted_n'),
+                'mean_uG':r.get(mean_key),
+                'mean_error_uG':r.get(mean_error_key),
+                'median_uG':r.get(median_key),
+                'median_error_uG':r.get(median_error_key),
+                'error_weighted_mean_uG':r.get(weighted_mean_key),
+                'error_weighted_mean_error_uG':r.get(weighted_mean_error_key),
+                'error_weighted_median_uG':r.get(weighted_median_key),
+                'error_weighted_median_error_uG':r.get(weighted_median_error_key),
+            })
+    pd.DataFrame(tidy).to_csv(folder/'statistics_summary.csv',index=False)
     (folder/'statistics_summary.json').write_text(json.dumps(rows,indent=2,allow_nan=False)+'\n')
     (folder/'statistics_summary.md').write_text('# Saved-result statistics\n\n'+display(rows)+'\n'+NOTES)
     (folder/'README.txt').write_text(NOTES)
