@@ -33,12 +33,16 @@ def add_statistics(row,prefix,x):
     prefix=f'{prefix}_' if prefix else ''
     if len(x)==0:
         row[f'{prefix}n']=0
+        row[f'{prefix}min_B_uG']=None
+        row[f'{prefix}max_B_uG']=None
         for name in ('mean','median'):
             row[f'{prefix}{name}_B_uG']=None
             row[f'{prefix}{name}_bootstrap_sd_uG']=None
         return
     sample=np.random.default_rng(SEED).choice(x,(DRAWS,len(x)),replace=True)
     row[f'{prefix}n']=int(len(x))
+    row[f'{prefix}min_B_uG']=float(x.min())
+    row[f'{prefix}max_B_uG']=float(x.max())
     row[f'{prefix}mean_B_uG']=float(x.mean())
     row[f'{prefix}mean_bootstrap_sd_uG']=float(sample.mean(axis=1).std())
     row[f'{prefix}median_B_uG']=float(np.median(x))
@@ -91,6 +95,8 @@ def summarize(bfile,efile,label):
                 add_weighted_statistics(row,'',values[valid],1/sigma[valid]**2)
         else:
             sample=np.random.default_rng(SEED).choice(x,(DRAWS,len(x)),replace=True)
+            row['absolute_min_B_uG']=float(x.min())
+            row['absolute_max_B_uG']=float(x.max())
             row['mean_abs_B_uG']=float(x.mean())
             row['mean_abs_bootstrap_sd_uG']=float(sample.mean(axis=1).std())
             row['median_abs_B_uG']=float(np.median(x))
@@ -197,6 +203,8 @@ def save(folder,rows):
                 'field_group':group,
                 'n_sources':r[n_key],
                 'n_sources_with_valid_errors':r.get('weighted_n' if group in {'all_signed','absolute_all'} else f'{group}_weighted_n'),
+                'min_B_uG':r.get('min_B_uG' if group=='all_signed' else f'{group}_min_B_uG' if group in {'positive','negative'} else 'absolute_min_B_uG'),
+                'max_B_uG':r.get('max_B_uG' if group=='all_signed' else f'{group}_max_B_uG' if group in {'positive','negative'} else 'absolute_max_B_uG'),
                 'mean_uG':r.get(mean_key),
                 'mean_error_uG':r.get(mean_error_key),
                 'median_uG':r.get(median_key),
@@ -206,6 +214,7 @@ def save(folder,rows):
                 'error_weighted_median_uG':r.get(weighted_median_key),
                 'error_weighted_median_error_uG':r.get(weighted_median_error_key),
             })
+            tidy[-1]['range_width_uG']=tidy[-1]['max_B_uG']-tidy[-1]['min_B_uG']
     pd.DataFrame(tidy).to_csv(folder/'statistics_summary.csv',index=False)
     (folder/'statistics_summary.json').write_text(json.dumps(rows,indent=2,allow_nan=False)+'\n')
     (folder/'statistics_summary.md').write_text('# Saved-result statistics\n\n'+display(rows)+'\n'+NOTES)
