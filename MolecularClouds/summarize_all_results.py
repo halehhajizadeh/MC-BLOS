@@ -173,16 +173,16 @@ def save(folder,rows):
             ('all_signed','n_finite_fields'),
             ('positive','positive_n'),
             ('negative','negative_n'),
-            ('all_magnitudes','n_finite_fields'),
+            ('absolute_all','n_finite_fields'),
         ]
         for group,n_key in groups:
             if group=='all_signed':
                 ordinary=''; weighted='weighted_'
-            elif group=='all_magnitudes':
+            elif group=='absolute_all':
                 ordinary='mean_abs'; weighted='weighted_mean_abs'
             else:
                 ordinary=f'{group}_'; weighted=f'{group}_weighted_'
-            if group=='all_magnitudes':
+            if group=='absolute_all':
                 mean_key='mean_abs_B_uG'; mean_error_key='mean_abs_bootstrap_sd_uG'
                 median_key='median_abs_B_uG'; median_error_key='median_abs_bootstrap_sd_uG'
                 weighted_mean_key='weighted_mean_abs_B_uG'; weighted_mean_error_key='weighted_mean_abs_bootstrap_sd_uG'
@@ -196,7 +196,7 @@ def save(folder,rows):
                 'dataset':r['dataset'],
                 'field_group':group,
                 'n_sources':r[n_key],
-                'n_sources_with_valid_errors':r.get('weighted_n' if group=='all_signed' or group=='all_magnitudes' else f'{group}_weighted_n'),
+                'n_sources_with_valid_errors':r.get('weighted_n' if group in {'all_signed','absolute_all'} else f'{group}_weighted_n'),
                 'mean_uG':r.get(mean_key),
                 'mean_error_uG':r.get(mean_error_key),
                 'median_uG':r.get(median_key),
