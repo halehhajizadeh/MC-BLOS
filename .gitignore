@@ -11,6 +11,12 @@ __pycache__/
 MolecularClouds/FileOutput*/**
 !MolecularClouds/FileOutput*/**/
 !MolecularClouds/FileOutput*/**/.gitkeep
+MolecularClouds/Statistics/
+MolecularClouds/outputs/
+MolecularClouds/output/
+MolecularClouds/outputs*/
+MolecularClouds/output*/
+MolecularClouds/*_comparison.csv
 
 # Runtime logs and compiled manuscript files
 *.log
