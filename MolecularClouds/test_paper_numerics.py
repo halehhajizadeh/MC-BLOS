@@ -5,9 +5,32 @@ import pandas as pd
 from LocalLibraries.CalculateB import electronColumnDensity
 from LocalLibraries import config
 from LocalLibraries.Uncertainty import align_fields, combine_uncertainties
+from LocalLibraries.PaperDiagnostics import field_difference_steps, mean_contrast, proximity_groups
 
 
 class NumericalChecks(unittest.TestCase):
+    def test_reference_removal_uses_source_ids_not_dataframe_index(self):
+        from LocalLibraries.MatchedRMExtinctionFunctions import rmMatchingPts
+        data = pd.DataFrame({'ID#': [8, 121, 205], 'value': [1, 2, 3]})
+        references = pd.DataFrame({'ID#': [121, 205]})
+        result = rmMatchingPts(data, references)
+        self.assertEqual(result['ID#'].tolist(), [8])
+        self.assertEqual(result['value'].tolist(), [1])
+
+    def test_literature_attribution_closes_across_sign_change(self):
+        ne, a, b, c = field_difference_steps(-8.3, -39.4, -196., 34.92, 31.55, .25)
+        self.assertGreater(ne, 0)
+        self.assertAlmostEqual(-196 + a + b + c, (34.92-31.55)/(.812*.25))
+
+    def test_regional_rm_contrast_cancels_scalar_reference(self):
+        x = np.array([12., 18., -2., 6.])
+        north = [True, True, False, False]
+        self.assertAlmostEqual(mean_contrast(x, north), mean_contrast(x-31.6, north))
+
+    def test_proximity_groups_include_transitive_neighbours(self):
+        sep = np.array([[0,1,2,9],[1,0,1,8],[2,1,0,7],[9,8,7,0]])
+        np.testing.assert_array_equal(proximity_groups(sep), [0,0,0,1])
+
     def column(self, av, abundance, layer, depth):
         return electronColumnDensity(av, abundance, [layer], [2*depth])[0]/config.VExtinct_2_Hcol
 

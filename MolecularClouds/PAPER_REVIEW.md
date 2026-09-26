@@ -1,3 +1,47 @@
+# September 22, 2026: numerical rerun and current manuscript
+
+This section supersedes the historical review below. The current author-review
+PDF and source are `paper2_haleh.pdf` and `paper2_haleh.tex`. The abstract and
+conclusions remain empty and were preserved at the author's explicit request.
+
+The paper analysis was rerun in `FileOutput_ImprovedPlots/Perseus`, including all
+stored density and temperature perturbations. The separate PaperRevision folder
+was removed outside this task and has not been recreated. Existing user edits
+to the general plotting/calculation scripts were retained.
+
+- Adopted the published 205-source membership, including flagged interpolation
+  for the restored ID 205 and removal of unmatched ID 121. The ON catalog has
+  197 sources, 123 positive and 74 negative; median absolute field 116.07 uG.
+- Applied corrected boundary integration, source-aligned uncertainty combination,
+  and explicit unbounded excursions (13 sources). All paper tables use one run.
+- Recomputed full/clean/multiplier-3 regional statistics and observed-RM contrasts.
+  The full and clean contrasts are 7.98 and 13.33 rad/m^2; m=3 gives 2.54.
+  Proximity-group bootstrap is explicitly descriptive, not a spatial-null test.
+- Added the ordered RM/reference/electron-column budget for 13 literature matches,
+  OFF leave-one-out checks, scalar versus plane comparison inside/outside the
+  reference convex hull, and a diagnostic for the largest field estimates.
+- Identified and reported selection-order sensitivity: stability on the original
+  14 candidates recommends eight; excluding the close pair first recommends
+  eleven, leaving 194 ON positions and five changed common signs.
+- Replaced the mismatched literature figure, plotted Zeeman beams and nearest
+  positions, and qualified the spatial interpretation according to foreground
+  and extinction-cut sensitivity. The manuscript does not claim an independent
+  cloud-scale reversal or a calibrated absolute field-strength scale.
+- Fourteen numerical/reference-selection tests passed. Integration checks verified
+  catalog membership, all sensitivity-grid IDs, multiplier-3 equality on common
+  sources, literature/field-table agreement, and input checksums. The script was
+  rerun successfully after published membership had already been reconciled.
+
+Use `FileOutput_ImprovedPlots/Perseus/PaperTables/README.md` for reproduction.
+The manuscript table writer no longer rewrites the paper body. The exact
+extinction-map provenance/effective beam remains an author verification item.
+New OFF observations, chemical-model families and complete-selection synthetic
+recovery experiments are identified as future tests, not represented as done.
+
+---
+
+## Historical review (superseded where inconsistent)
+
 # Manuscript review
 
 Reviewed all sections of `paper2_haleh.tex` against the saved multiplier-1

@@ -28,6 +28,8 @@ import logging
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--zeeman-only', action='store_true',
                     help='Use saved Perseus BLOS data and save only the Zeeman map variant.')
+parser.add_argument('--no-zeeman', action='store_true',
+                    help='Save the original BLOS map without the Zeeman overlay; combine with --zeeman-only to use saved data.')
 parser.add_argument('--sign-secure', action='store_true',
                     help='Keep only points whose asymmetric uncertainty interval does not cross zero.')
 parser.add_argument('--uncertainty-100', action='store_true',
@@ -144,7 +146,8 @@ for i in range(len(Ra)):
     y.append(pixelColumn)
 # ---- Convert Ra and Dec of points into pixel values of the fits file.
 color, size = putil.p2RGB(BLOS, size_cap=1000, scale_factor=0.5, alpha=0.7)
-plt.scatter(x, y, s=size, facecolor=color, marker='o', linewidth=0.8, edgecolors='black')
+if not args.zeeman_only or args.no_zeeman:
+    plt.scatter(x, y, s=size, facecolor=color, marker='o', linewidth=0.8, edgecolors='black')
 
 # ---- Annotate the BLOS Points
 # pt.labelPoints(ax, n, x, y, textFix = config.textFix)  # Removed: labels clutter the plot
@@ -171,7 +174,8 @@ for i in range(len(RefRa)):
     yRef.append(pixelColumn)
 # ---- Convert Ra and Dec of points into pixel values of the fits file.
 colorRef, sizeRef = putil.p2C(RefBLOS, colour=(0, 1, 0), size_cap=1000, scale_factor=0.5, alpha=0.7)
-plt.scatter(xRef, yRef, s=sizeRef, facecolor=colorRef, marker='o', linewidth=1.5, edgecolors='darkgreen')
+if not args.zeeman_only or args.no_zeeman:
+    plt.scatter(xRef, yRef, s=sizeRef, facecolor=colorRef, marker='o', linewidth=1.5, edgecolors='darkgreen')
 
 # ---- Annotate the BLOS Points
 # pt.labelPoints(ax, Refn, xRef, yRef, color = 'magenta', textFix=config.textFix)  # Removed: labels clutter the plot
@@ -248,29 +252,33 @@ elif regionOfInterest.fitsDataType == 'VisualExtinction':
 # ---- Style the colour bar.
 
 # ---- Style the legend
-marker1 = plt.scatter([], [], s=10/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
-marker2 = plt.scatter([], [], s=100/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
-marker3 = plt.scatter([], [], s=500/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
-marker4 = plt.scatter([], [], s=1000/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
-marker5 = plt.scatter([], [], s=100, facecolor=(1, 0, 0, 0.7), edgecolor='black', linewidth=0.8)
-marker6 = plt.scatter([], [], s=100, facecolor=(0, 0, 1, 0.7), edgecolor='black', linewidth=0.8)
-marker7 = plt.scatter([], [], s=100, facecolor=(0, 1, 0, 0.7), edgecolor='darkgreen', linewidth=1.5)
-legend_markers = [marker1, marker2, marker4, marker5, marker6, marker7]
+if args.zeeman_only and not args.no_zeeman:
+    legend_markers = []
+    labels = []
+else:
+    marker1 = plt.scatter([], [], s=10/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
+    marker2 = plt.scatter([], [], s=100/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
+    marker3 = plt.scatter([], [], s=500/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
+    marker4 = plt.scatter([], [], s=1000/2, facecolor=(1, 1, 1, 0.7), edgecolor='black')
+    marker5 = plt.scatter([], [], s=100, facecolor=(1, 0, 0, 0.7), edgecolor='black', linewidth=0.8)
+    marker6 = plt.scatter([], [], s=100, facecolor=(0, 0, 1, 0.7), edgecolor='black', linewidth=0.8)
+    marker7 = plt.scatter([], [], s=100, facecolor=(0, 1, 0, 0.7), edgecolor='darkgreen', linewidth=1.5)
+    legend_markers = [marker1, marker2, marker4, marker5, marker6, marker7]
+    labels = [
+        str(10)+r'$\mu G$',
+        str(100)+r'$\mu G$',
+        str(1000) + "+"+r'$\mu G$',
+        'Away from us',
+        'Towards us',
+        'Off points'
+        ]
 
-labels = [
-    str(10)+r'$\mu G$',
-    str(100)+r'$\mu G$',
-    str(1000) + "+"+r'$\mu G$',
-    'Away from us',
-    'Towards us',
-    'Off points'
-    ]
-
-legend = ax.legend(handles=legend_markers, labels=labels, scatterpoints=1, ncol=2, loc='lower left')
-
-frame = legend.get_frame()
-frame.set_facecolor('1')
-frame.set_alpha(0.4)
+if not args.zeeman_only or args.no_zeeman:
+    legend = ax.legend(handles=legend_markers, labels=labels, scatterpoints=1,
+                       ncol=2, loc='lower left')
+    frame = legend.get_frame()
+    frame.set_facecolor('1')
+    frame.set_alpha(0.4)
 # ---- Style the legend.
 
 # ---- Style the textbox
@@ -279,9 +287,37 @@ props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 ax.text(0.02, 0.98, offPointsText, transform=ax.transAxes, fontsize=12, verticalalignment='top', bbox=props)
 # ---- Style the textbox
 
+# ---- Overlay published Perseus OH Zeeman pointings
+# Literature coordinates and fields are kept in the paper-revision table so
+# the map uses the same positions and sign convention as the comparison table.
+zeeman_handles = []
+if isPerseus and not (args.sign_secure or args.uncertainty_100 or args.no_zeeman):
+    zeemanTableFile = Path(config.CloudOutputDir) / 'PaperTables' / 'zeeman_comparison.csv'
+    zeemanTable = pd.read_csv(zeemanTableFile)
+    for _, row in zeemanTable.iterrows():
+        _, zeeman_size = putil.p2RGB([abs(row['B'])], size_cap=1000,
+                                     scale_factor=0.5, alpha=0.9)
+        zeeman = ax.scatter(row['Ra(deg)'], row['Dec(deg)'],
+                            transform=ax.get_transform('icrs'),
+                            marker='*', s=zeeman_size[0] * 3,
+                            facecolor='blue', edgecolor='white',
+                            linewidth=0.6, zorder=20)
+        zeeman_handles.append(zeeman)
+
+    zeeman_label = r'OH Zeeman: B1, L1448-CO, L1448-COe'
+    legend_markers.append(ax.scatter([], [], marker='*', s=90,
+                                     facecolor='blue', edgecolor='white',
+                                     linewidth=0.6))
+    labels.append(zeeman_label)
+    legend = ax.legend(handles=legend_markers, labels=labels, scatterpoints=1,
+                       ncol=2, loc='lower left')
+    frame = legend.get_frame()
+    frame.set_facecolor('1')
+    frame.set_alpha(0.4)
+
 # ---- Display or save the figure
 # plt.show()
-if not args.zeeman_only:
+if not args.zeeman_only or args.no_zeeman:
     fig.savefig(BLOSPointsPlotFile, bbox_inches='tight')
     BLOSPointsPlotFilePDF = str(Path(BLOSPointsPlotFile).with_suffix('.pdf'))
     fig.savefig(BLOSPointsPlotFilePDF, bbox_inches='tight', format='pdf')
@@ -296,30 +332,7 @@ if args.sign_secure or args.uncertainty_100:
     print('Saving filtered BLOS figure to ' + str(filteredPath) +
           ' and ' + str(filteredPath.with_suffix('.pdf')))
 
-if isPerseus and not (args.sign_secure or args.uncertainty_100):
-    # Goodman et al. (1989), ApJL 338, L61, doi:10.1086/185401:
-    # -27 +/- 4 uG in the Zeeman convention = +27 +/- 4 uG here
-    # (Faraday convention: positive toward us).
-    # Goodman et al. (1989), Fig. 1: FK4 B1950 03h30m12s +30d57m26s,
-    # transformed to ICRS. The 51.32 deg RA quoted in Tahani (2018)
-    # is inconsistent with the original pointing (approximately 53.32 deg).
-    _, zeeman_size = putil.p2RGB([27], size_cap=1000, scale_factor=0.5, alpha=0.7)
-    # Modest visibility boost for the star: 40.5 pt^2, versus the original 230.
-    zeeman_size = [size * 3 for size in zeeman_size]
-    zeeman = ax.scatter(53.32429106, 31.12498826, transform=ax.get_transform('icrs'),
-                        marker='*', s=zeeman_size, facecolor='blue', edgecolor='white',
-                        linewidth=0.5, zorder=20)
-    # Insert a full-width row above the original two-column legend, preserving
-    # its marker order, column spacing, font size, and frame styling.
-    zeeman_row = ax.legend(handles=[zeeman], labels=[
-        r'Zeeman: $+27\pm4\,\mu\mathrm{G}$'
-    ], scatterpoints=1, loc='lower left')
-    from matplotlib.offsetbox import DrawingArea, VPacker
-    legend._legend_box.get_children().insert(1, VPacker(
-        children=[zeeman_row._legend_handle_box, DrawingArea(0, 3)],
-        align='left', pad=0, sep=0))
-    legend._legend_box.align = 'left'
-    ax.legend_ = legend
+if zeeman_handles:
     plotPath = Path(BLOSPointsPlotFile)
     for suffix in ('.png', '.pdf'):
         zeemanPath = plotPath.with_name(plotPath.stem + '_Zeeman').with_suffix(suffix)

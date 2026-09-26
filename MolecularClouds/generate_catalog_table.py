@@ -3,6 +3,16 @@
 Generate the BLOS catalog table for the paper appendix.
 """
 
+# The paper analysis supplies one source-aligned catalog and table prescription.
+from pathlib import Path
+import runpy
+import sys
+from LocalLibraries import config
+_paper_root = Path(__file__).resolve().parent
+if (Path(config.CloudOutputDir) / 'PaperTables/analysis_summary.json').exists():
+    runpy.run_path(str(_paper_root / 'write_paper_revision.py'), run_name='__main__')
+    sys.exit(0)
+
 import pandas as pd
 import numpy as np
 import os

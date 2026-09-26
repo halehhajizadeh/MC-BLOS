@@ -25,7 +25,8 @@ plt.rcParams.update({
     'legend.fontsize': 11,
 })
 
-base = Path('FileOutput_ImprovedPlots/Perseus')
+from LocalLibraries import config
+base = Path(config.CloudOutputDir)
 tables, plots = base / 'PaperTables', base / 'Plots'
 def read(name):
     return pd.read_csv(base / name, sep='\t')
@@ -48,6 +49,10 @@ for row in audit.itertuples(index=False, name=None):
     i, ra, dec, rm, err, av, status = row
     tex.append(f'{int(i)} & {ra:.4f} & {dec:.4f} & {rm:.1f} & {err:.1f} & {av:.3f} & {status} ' + r'\\')
 tex += [r'\enddata', r'\tablecomments{Coordinates are J2000. IDs are the identifiers in the matched MC-BLOS catalog. Near-high-extinction rejection tests a square extending 20 pixels in each coordinate around a candidate. ID 197 is excluded from OFF selection because it lies within 1.2 arcmin of the preferred candidate 198. Rejection from the OFF sample does not remove an observation from the ON sample. No candidates are rejected by the anomalous-RM filter; the far-cloud filter is disabled.}', r'\end{deluxetable*}']
+tex[-2] = (r'\tablecomments{Coordinates are J2000. IDs refer to the current matched MC-BLOS catalog. '
+           r'Near-high-extinction rejection uses the configured cloud distance and Jeans length. '
+           f'Separation exclusion uses {config.minRefSeparationArcmin:g} arcmin. '
+           r'OFF rejection does not itself exclude a source from ON selection; the ON extinction cut is applied separately.}')
 (tables / 'off_candidate_audit.tex').write_text('\n'.join(tex) + '\n')
 
 fig, ax = plt.subplots(figsize=(8, 4.8), constrained_layout=True)
@@ -91,7 +96,7 @@ for name, mask in [('all', np.ones(len(b), dtype=bool)), ('av_le_3', b.Extinctio
     report[name] = dict(n=int(mask.sum()), rho=float(rho), p=float(p))
 for sub in ['DensitySensitivity/B_Av_T0_n+50.csv','TemperatureSensitivity/B_Av_T+20_n0.csv']:
     assert b['ID#'].tolist() == read(sub)['ID#'].tolist(), sub
-m3 = pd.read_csv(Path('FileOutput_ImprovedPlots_Multiplier3/Perseus/FinalData/BLOSPoints.csv'), sep='\t')
+m3 = b[b.Extinction >= 3*ref['Reference Extinction']].copy()
 common = b.set_index('ID#').loc[m3['ID#']]
 assert np.allclose(common['Magnetic_Field(uG)'], m3['Magnetic_Field(uG)'])
 report['multiplier3'] = dict(n=len(m3), positive=int((m3.Scaled_RM>0).sum()),

@@ -37,6 +37,8 @@ blos_data = pd.read_csv(os.path.join(final_data_dir, 'BLOSPoints.csv'), sep='\t'
 final_results = pd.read_csv(os.path.join(final_data_dir, 'FinalBLOSResults.csv'), sep='\t')
 ref_data = pd.read_csv(os.path.join(final_data_dir, 'ReferenceData.csv'), sep='\t')
 selected_ref = pd.read_csv(os.path.join(final_data_dir, 'SelectedRefPoints.csv'), sep='\t')
+zeeman_file = os.path.join(paper_tables_dir, 'zeeman_comparison.csv')
+zeeman_data = pd.read_csv(zeeman_file)
 
 # Extract values
 B_parallel = blos_data['Magnetic_Field(uG)'].values
@@ -248,6 +250,16 @@ ref_dec = selected_ref['Dec(deg)'].values
 ax.scatter(ref_ra, ref_dec, s=100, c='green', marker='s',
            edgecolors='darkgreen', linewidths=1.5, zorder=5,
            label='Reference points')
+
+# Published OH Zeeman pointings in Perseus.
+ax.scatter(zeeman_data['Ra(deg)'], zeeman_data['Dec(deg)'],
+           s=np.clip(np.abs(zeeman_data['B'].values) * 3, 60, 180),
+           c='blue', marker='*', edgecolors='white', linewidths=0.7,
+           zorder=8, label='OH Zeeman pointings')
+for _, row in zeeman_data.iterrows():
+    ax.annotate(row['Region'], (row['Ra(deg)'], row['Dec(deg)']),
+                xytext=(5, 5), textcoords='offset points', fontsize=9,
+                color='navy', zorder=9)
 
 ax.set_xlabel('Right Ascension (deg)')
 ax.set_ylabel('Declination (deg)')

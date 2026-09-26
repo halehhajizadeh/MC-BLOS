@@ -46,7 +46,9 @@ def rmMatchingPts(ExtincRMTable, refRMTable):
     # -------- REMOVE REFERENCE POINTS FROM THE MATCHED RM AND EXTINCTION DATA --------
     # The rm points used as reference points should not be used to calculate BLOS
     ind = refRMTable['ID#']  # Indices of the reference points
-    RMExtinctionData = AllMatchedRMExtinctionData.drop(ind).reset_index(drop=True)
+    RMExtinctionData = AllMatchedRMExtinctionData.loc[
+        ~AllMatchedRMExtinctionData['ID#'].isin(ind)
+    ].reset_index(drop=True)
     return RMExtinctionData
 
 def rmLowExtPts(ExtincRMTable, extRef):
