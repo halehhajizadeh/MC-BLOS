@@ -27,6 +27,38 @@ def weighted_bootstrap(x,w):
         if len(after):med[k]=(x[ix[k]]+x[ix[k]+1+after[0]])/2
     return float((mass@x/total).std()),float(med.std())
 
+def add_statistics(row,prefix,x):
+    """Add ordinary mean/median values and bootstrap error bars."""
+    x=np.asarray(x,dtype=float)
+    prefix=f'{prefix}_' if prefix else ''
+    if len(x)==0:
+        row[f'{prefix}n']=0
+        for name in ('mean','median'):
+            row[f'{prefix}{name}_B_uG']=None
+            row[f'{prefix}{name}_bootstrap_sd_uG']=None
+        return
+    sample=np.random.default_rng(SEED).choice(x,(DRAWS,len(x)),replace=True)
+    row[f'{prefix}n']=int(len(x))
+    row[f'{prefix}mean_B_uG']=float(x.mean())
+    row[f'{prefix}mean_bootstrap_sd_uG']=float(sample.mean(axis=1).std())
+    row[f'{prefix}median_B_uG']=float(np.median(x))
+    row[f'{prefix}median_bootstrap_sd_uG']=float(np.median(sample,axis=1).std())
+
+def add_weighted_statistics(row,prefix,x,weights):
+    """Add inverse-variance weighted statistics and bootstrap error bars."""
+    prefix=f'{prefix}_' if prefix else ''
+    x=np.asarray(x,dtype=float);weights=np.asarray(weights,dtype=float)
+    if len(x)==0:
+        for name in ('mean','median'):
+            row[f'{prefix}weighted_{name}_B_uG']=None
+            row[f'{prefix}weighted_{name}_bootstrap_sd_uG']=None
+        return
+    row[f'{prefix}weighted_mean_B_uG']=float(np.average(x,weights=weights))
+    row[f'{prefix}weighted_median_B_uG']=median_weighted(x,weights)
+    mean_sd,median_sd=weighted_bootstrap(x,weights)
+    row[f'{prefix}weighted_mean_bootstrap_sd_uG']=mean_sd
+    row[f'{prefix}weighted_median_bootstrap_sd_uG']=median_sd
+
 def summarize(bfile,efile,label):
     b=pd.read_csv(bfile,sep='\t');e=pd.read_csv(efile,sep='\t')
     assert not b['ID#'].duplicated().any() and not e['ID#'].duplicated().any()
@@ -50,20 +82,34 @@ def summarize(bfile,efile,label):
              field_sha256=hashlib.sha256(bfile.read_bytes()).hexdigest(),
              uncertainty_sha256=hashlib.sha256(efile.read_bytes()).hexdigest())
     for kind,x in [('signed',v),('abs',abs(v))]:
-        sample=np.random.default_rng(SEED).choice(x,(DRAWS,len(x)),replace=True)
-        row[f'mean_{kind}_B_uG']=float(x.mean())
-        row[f'mean_{kind}_bootstrap_sd_uG']=float(sample.mean(axis=1).std())
-        row[f'median_{kind}_B_uG']=float(np.median(x))
-        row[f'median_{kind}_bootstrap_sd_uG']=float(np.median(sample,axis=1).std())
-        if valid.any():
-            x=values[valid] if kind=='signed' else abs(values[valid])
-            w=1/sigma[valid]**2
-            row[f'weighted_mean_{kind}_B_uG']=float(np.average(x,weights=w))
-            row[f'weighted_median_{kind}_B_uG']=median_weighted(x,w)
-            a,c=weighted_bootstrap(x,w)
-            row[f'weighted_mean_{kind}_bootstrap_sd_uG']=a
-            row[f'weighted_median_{kind}_bootstrap_sd_uG']=c
-            row['effective_weighted_n']=float(w.sum()**2/np.sum(w**2))
+        # Keep the established overall column names for compatibility.
+        if kind=='signed':
+            add_statistics(row,'',x)
+            if valid.any():
+                add_weighted_statistics(row,'',values[valid],1/sigma[valid]**2)
+        else:
+            sample=np.random.default_rng(SEED).choice(x,(DRAWS,len(x)),replace=True)
+            row['mean_abs_B_uG']=float(x.mean())
+            row['mean_abs_bootstrap_sd_uG']=float(sample.mean(axis=1).std())
+            row['median_abs_B_uG']=float(np.median(x))
+            row['median_abs_bootstrap_sd_uG']=float(np.median(sample,axis=1).std())
+            if valid.any():
+                x=abs(values[valid]);w=1/sigma[valid]**2
+                row['weighted_mean_abs_B_uG']=float(np.average(x,weights=w))
+                row['weighted_median_abs_B_uG']=median_weighted(x,w)
+                a,c=weighted_bootstrap(x,w)
+                row['weighted_mean_abs_bootstrap_sd_uG']=a
+                row['weighted_median_abs_bootstrap_sd_uG']=c
+                row['effective_weighted_n']=float(w.sum()**2/np.sum(w**2))
+    # Separate signed positive and negative populations, including their
+    # error-weighted versions and bootstrap error bars.
+    for side,mask in [('positive',values>0),('negative',values<0)]:
+        add_statistics(row,side,values[mask])
+        weighted_mask=mask&valid
+        if weighted_mask.any():
+            add_weighted_statistics(row,side,values[weighted_mask],1/sigma[weighted_mask]**2)
+        else:
+            add_weighted_statistics(row,side,np.array([]),np.array([]))
     return row
 
 NOTES='''All fields are in microgauss. Ordinary statistics use finite nominal fields.
@@ -72,6 +118,9 @@ resamples, with seed 0; these are sampling errors, not full measurement errors.
 Weighted means/medians use w = 1/sigma_B² and sigma_B = (upper + lower)/2.
 Nonfinite, negative, or zero weighting errors are excluded and counted.
 Both signed fields and magnitudes are in the CSV/JSON; the main display uses |B|.
+The positive_* and negative_* columns give separate signed-population statistics,
+including ordinary and inverse-variance weighted means/medians and bootstrap
+error bars. Their *_n columns report the population sizes.
 The standard deviation describes signed B, with ddof=1. Source IDs align errors.
 Saved uncertainty prescriptions differ between historical and paper-reanalysis
 runs; these statistics preserve each prescription, including any old clipping.
@@ -91,6 +140,19 @@ def display(rows):
             return f"{r[prefix+'_abs_B_uG']:.2f} ± {r[prefix+'_abs_bootstrap_sd_uG']:.2f}"
         lines.append(f"| {r['dataset']} | {r['n_total']} | {r['positive']} / {r['negative']} | "+
                      ' | '.join(val(k) for k in ['mean','median','weighted_mean','weighted_median'])+f" | {r['n_weighted']} |")
+    lines+=['','| Dataset | Group | N | Mean B (µG) | Median B (µG) | Weighted mean B (µG) | Weighted median B (µG) |',
+            '|---|---|---:|---:|---:|---:|---:|']
+    for r in rows:
+        for group in ['positive','negative']:
+            def group_val(name):
+                value=r.get(f'{group}_{name}_B_uG')
+                error=r.get(f'{group}_{name}_bootstrap_sd_uG')
+                return 'Unavailable' if value is None else f'{value:.2f} ± {error:.2f}'
+            def weighted_val(name):
+                value=r.get(f'{group}_weighted_{name}_B_uG')
+                error=r.get(f'{group}_weighted_{name}_bootstrap_sd_uG')
+                return 'Unavailable' if value is None else f'{value:.2f} ± {error:.2f}'
+            lines.append(f"| {r['dataset']} | {group} | {r[f'{group}_n']} | {group_val('mean')} | {group_val('median')} | {weighted_val('mean')} | {weighted_val('median')} |")
     lines+=['','| Dataset | Minimum B (µG) | Maximum B (µG) | Signed-B standard deviation (µG) | Excluded from weighting |',
             '|---|---:|---:|---:|---:|']
     for r in rows:
