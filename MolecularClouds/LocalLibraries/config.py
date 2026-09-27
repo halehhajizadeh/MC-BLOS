@@ -45,6 +45,7 @@ minRefSeparationArcmin = configStartSettings['Judgement - Optimal Reference Poin
 useQuadrantEnforce = configStartSettings['Judgement - Cloud Quadrant Sampling'].getboolean('Use Minimum Quadrant Sampling')
 minPointsPerQuadrant = configStartSettings['Judgement - Cloud Quadrant Sampling'].getint('Minimum Points Per Quadrant')
 weightingScheme = configStartSettings['Judgement - Cloud Quadrant Sampling'].get('Weighting Scheme')
+quadrantCenter = configStartSettings['Judgement - Cloud Quadrant Sampling'].get('Quadrant Center', fallback='cloud').strip().lower()
 
 onPtsExtMultipleThreshold = configStartSettings['Judgement - On Point Extinction Multiple of Off Point Average Multiplier'].getfloat('On Point Extinction Multiple of Off Point Average Multiplier')
 

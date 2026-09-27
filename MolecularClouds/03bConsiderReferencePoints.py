@@ -73,6 +73,9 @@ FilteredRefPoints = pd.read_csv(FilteredRefFile, sep=config.dataSeparator)
 # ---- Find the lines which divide the cloud into quadrants.
 cloudCenterX, cloudCenterY = rjl.findWeightedCenter(regionOfInterest.hdu.data, regionOfInterest.xmin, regionOfInterest.xmax, regionOfInterest.ymin, regionOfInterest.ymax)
 m, b = rjl.getDividingLine(regionOfInterest.hdu.data, regionOfInterest.xmin, regionOfInterest.xmax, regionOfInterest.ymin, regionOfInterest.ymax)
+if config.quadrantCenter == 'filtered reference median' or config.quadrantCenter == 'filtered_reference_median':
+    cloudCenterX = float(FilteredRefPoints['Extinction_Index_x'].median())
+    cloudCenterY = float(FilteredRefPoints['Extinction_Index_y'].median())
 mPerp, bPerp = rjl.getPerpendicularLine(cloudCenterX, cloudCenterY, m)
 # ---- Find the lines which divide the cloud into quadrants.
 
@@ -212,7 +215,19 @@ minSamples = minSamples+1 #Account for the index shift.
 # ---- Fix the undersampled quadrants by sampling more points until the quadrant has enough points
 
 # ---- Solidify ref points
-chosenRefPoints_After_Quadrants_Num = [i for i in range(minSamples)] if config.useQuadrantEnforce else chosenRefPoints_Num
+# Add the minimum required candidates by their actual dataframe indexes. The
+# previous range-based selection could add the wrong rows after the stability
+# table was sorted, leaving a supposedly enforced quadrant empty.
+if config.useQuadrantEnforce:
+    chosenRefPoints_After_Quadrants_Num = list(chosenRefPoints_Num)
+    for quadrant in [Q1, Q2, Q3, Q4]:
+        present = set(chosenRefPoints_After_Quadrants_Num).intersection(quadrant)
+        needed = max(0, config.minPointsPerQuadrant - len(present))
+        chosenRefPoints_After_Quadrants_Num.extend(
+            [index for index in quadrant if index not in chosenRefPoints_After_Quadrants_Num][:needed])
+    chosenRefPoints_After_Quadrants_Num = list(dict.fromkeys(chosenRefPoints_After_Quadrants_Num))
+else:
+    chosenRefPoints_After_Quadrants_Num = chosenRefPoints_Num
 chosenRefPoints = FilteredRefPoints.loc[chosenRefPoints_After_Quadrants_Num].sort_values('Extinction_Value')
 # ---- Solidify ref points
 
