@@ -68,7 +68,7 @@ def make_map(label, bfile, zeeman, region):
     zx, zy = region.wcs.wcs_world2pix(zeeman['Ra(deg)'].to_numpy(), zeeman['Dec(deg)'].to_numpy(), 0)
     # Zeeman pointings are comparison measurements, so use one fixed symbol
     # size rather than scaling them with their measured field strengths.
-    ax.scatter(zx, zy, s=150, facecolor='deepskyblue', marker='*', edgecolors='white',
+    ax.scatter(zx, zy, s=150, facecolor='blue', marker='*', edgecolors='white',
                linewidth=0.7, zorder=20, label='OH Zeeman measurements')
     label_offsets = {'B1': (8, 10), 'L1448-CO': (-58, 12), 'L1448-COe': (10, -22)}
     for _, row in zeeman.iterrows():
