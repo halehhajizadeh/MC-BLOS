@@ -103,8 +103,15 @@ def validate_and_calculate():
         lower = e.TotalLowerBUncertainty.to_numpy(float)
         sigma = (upper + lower) / 2
         valid = np.isfinite(values) & np.isfinite(upper) & np.isfinite(lower) & (upper >= 0) & (lower >= 0) & (sigma > 0)
+        reference_file = bfile.parent / 'ReferenceData.csv'
+        if not reference_file.exists():
+            reference_file = bfile.parent.parent / 'FinalData/ReferenceData.csv'
+        reference = pd.read_csv(reference_file, sep='\t').iloc[0] if reference_file.exists() else None
         for group in ('all_signed', 'positive', 'negative', 'absolute_all'):
-            rows.append(calculate(label, group, values, valid, sigma))
+            row = calculate(label, group, values, valid, sigma)
+            row['reference_rm_rad_m2'] = float(reference['Reference RM']) if reference is not None else np.nan
+            row['reference_av_mag'] = float(reference['Reference Extinction']) if reference is not None else np.nan
+            rows.append(row)
         checks.append({
             'run': label,
             'blos_count': len(b),
@@ -116,7 +123,7 @@ def validate_and_calculate():
     existing = pd.read_csv(ROOT / 'Statistics' / 'statistics_summary.csv')
     key = ['dataset', 'field_group']
     merged = calculated.merge(existing, on=key, suffixes=('_calculated', '_csv'))
-    numeric = [c for c in calculated.columns if c not in key]
+    numeric = [c for c in calculated.columns if c not in key and c in existing.columns]
     for column in numeric:
         left = merged[f'{column}_calculated'].to_numpy(float)
         right = merged[f'{column}_csv'].to_numpy(float)
@@ -140,13 +147,14 @@ def write_report(rows, checks):
             run = r.dataset.replace('FileOutput_', '')
             table_rows.append([
                 run, r.field_group, str(int(r.n_sources)),
+                fmt(r.reference_rm_rad_m2), fmt(r.reference_av_mag),
                 f'{r.min_B_uG:.1f} to {r.max_B_uG:.1f}',
                 fmt(r.mean_uG, r.mean_error_uG),
                 fmt(r.median_uG, r.median_error_uG),
                 fmt(r.error_weighted_mean_uG, r.error_weighted_mean_error_uG),
                 fmt(r.error_weighted_median_uG, r.error_weighted_median_error_uG),
             ])
-        headers = ['Dataset', 'Field group', 'N', 'Range (µG)', 'Mean ± error',
+        headers = ['Dataset', 'Field group', 'N', 'Ref RM\n(rad m⁻²)', 'Ref A_V\n(mag)', 'Range (µG)', 'Mean ± error',
                    'Median ± error', 'Weighted mean ± error', 'Weighted median ± error']
         for start in range(0, len(table_rows), 16):
             page_rows = table_rows[start:start + 16]
@@ -158,7 +166,7 @@ def write_report(rows, checks):
             ax = fig.add_axes([0.02, 0.08, 0.96, 0.78])
             ax.axis('off')
             table = ax.table(cellText=page_rows, colLabels=headers, cellLoc='center', colLoc='center',
-                             loc='upper center', colWidths=[0.27, 0.12, 0.04, 0.14, 0.12, 0.12, 0.12, 0.13])
+                             loc='upper center', colWidths=[0.22, 0.10, 0.035, 0.09, 0.08, 0.12, 0.11, 0.11, 0.12, 0.12])
             table.auto_set_font_size(False); table.set_fontsize(7); table.scale(1, 1.7)
             for cell in table.get_celld().values(): cell.set_edgecolor('#999999')
             for (row, _), cell in table.get_celld().items():
