@@ -31,9 +31,19 @@ def load_references(bfile):
     return pd.read_csv(fallback, sep='\t') if fallback.exists() else pd.DataFrame()
 
 
+def plot_directory(bfile, label):
+    if bfile.parent.name == 'FinalData':
+        return bfile.parent.parent / 'Plots' / 'ZeemanMaps' / safe_name(label)
+    return bfile.parent / 'Plots' / 'ZeemanMaps' / safe_name(label)
+
+
 def make_map(label, bfile, zeeman, region):
     data = pd.read_csv(bfile, sep='\t')
     refs = load_references(bfile)
+    ref_data_file = bfile.parent / 'ReferenceData.csv'
+    if not ref_data_file.exists():
+        ref_data_file = bfile.parent.parent / 'FinalData/ReferenceData.csv'
+    ref_data = pd.read_csv(ref_data_file, sep='\t') if ref_data_file.exists() else pd.DataFrame()
     values = data['Magnetic_Field(uG)'].to_numpy(float)
     ra = data['Ra(deg)'].to_numpy(float)
     dec = data['Dec(deg)'].to_numpy(float)
@@ -45,19 +55,19 @@ def make_map(label, bfile, zeeman, region):
     im = ax.imshow(region.hdu.data, origin='lower', cmap='BrBG', interpolation='nearest', vmin=0, vmax=15)
     x, y = region.wcs.wcs_world2pix(ra, dec, 0)
     colors, sizes = putil.p2RGB(values, size_cap=1000, scale_factor=0.5, alpha=0.7)
-    ax.scatter(x[pos], y[pos], s=np.asarray(sizes)[pos], facecolor=np.asarray(colors, dtype=object)[pos],
-               marker='o', linewidth=0.8, edgecolors='black', label=r'$B_\parallel>0$ (toward)')
-    ax.scatter(x[neg], y[neg], s=np.asarray(sizes)[neg], facecolor=np.asarray(colors, dtype=object)[neg],
-               marker='o', linewidth=0.8, edgecolors='black', label=r'$B_\parallel<0$ (away)')
+    ax.scatter(x[pos], y[pos], s=np.asarray(sizes)[pos], facecolor='blue', alpha=0.7,
+               marker='o', linewidth=0.8, edgecolors='black', label='Towards us')
+    ax.scatter(x[neg], y[neg], s=np.asarray(sizes)[neg], facecolor='red', alpha=0.7,
+               marker='o', linewidth=0.8, edgecolors='black', label='Away from us')
 
     if not refs.empty:
         rx, ry = region.wcs.wcs_world2pix(refs['Ra(deg)'].to_numpy(), refs['Dec(deg)'].to_numpy(), 0)
-        ax.scatter(rx, ry, s=100, c='green', marker='s', edgecolors='darkgreen', linewidth=1.5,
-                   zorder=5, label='Reference points')
+        ax.scatter(rx, ry, s=100, c='limegreen', marker='o', edgecolors='darkgreen', linewidth=1.5,
+                   zorder=5, label='Off points')
 
     zx, zy = region.wcs.wcs_world2pix(zeeman['Ra(deg)'].to_numpy(), zeeman['Dec(deg)'].to_numpy(), 0)
     _, zsize = putil.p2RGB(np.abs(zeeman['B'].to_numpy()), size_cap=1000, scale_factor=0.5, alpha=0.9)
-    ax.scatter(zx, zy, s=np.asarray(zsize) * 3, facecolor='blue', marker='*', edgecolors='white',
+    ax.scatter(zx, zy, s=np.asarray(zsize) * 3, facecolor='deepskyblue', marker='*', edgecolors='white',
                linewidth=0.7, zorder=20, label='OH Zeeman measurements')
     for _, row in zeeman.iterrows():
         px, py = region.wcs.wcs_world2pix(row['Ra(deg)'], row['Dec(deg)'], 0)
@@ -88,7 +98,13 @@ def make_map(label, bfile, zeeman, region):
         handles.append(ax.scatter([], [], s=amount * 0.5, facecolor='white', edgecolor='black', alpha=0.7))
         labels.append(f'{amount} µG')
     ax.legend(handles, labels, loc='lower left', ncol=2, fontsize=9, framealpha=0.75)
-    ax.set_title(f'{label}\nBLOS map with OH Zeeman measurements', fontsize=14)
+    if not ref_data.empty:
+        rm = ref_data['Reference RM'].iloc[0]
+        av = ref_data['Reference Extinction'].iloc[0]
+        ax.text(0.02, 0.98, f'$\\mathrm{{RM}}_{{\\mathrm{{Off}}}}$: {rm:+.1f} rad/m$^2$\n'
+                f'$A_V$ Off: {av:+.2f} mag', transform=ax.transAxes, fontsize=12,
+                va='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+    ax.set_title('')
     fig.tight_layout()
     return fig
 
@@ -105,6 +121,12 @@ if __name__ == '__main__':
             bfile = ROOT / entry['field_source']
             fig = make_map(label, bfile, zeeman, region)
             stem = safe_name(label)
+            own_dir = plot_directory(bfile, label)
+            own_dir.mkdir(parents=True, exist_ok=True)
+            fig.savefig(own_dir / 'BLOSPointMap_Zeeman.png', bbox_inches='tight')
+            fig.savefig(own_dir / 'BLOSPointMap_Zeeman.pdf', bbox_inches='tight')
+            # Keep a uniquely named copy in the combined output directory for
+            # convenient browsing without changing the result directories.
             fig.savefig(OUT / f'{stem}.png', bbox_inches='tight')
             fig.savefig(OUT / f'{stem}.pdf', bbox_inches='tight')
             pdf.savefig(fig, bbox_inches='tight')
