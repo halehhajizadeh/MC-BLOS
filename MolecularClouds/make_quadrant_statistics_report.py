@@ -2,6 +2,7 @@
 from pathlib import Path
 import csv
 import hashlib
+import json
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -88,10 +89,11 @@ def calculate(label, group, values, valid, sigma):
 def validate_and_calculate():
     rows = []
     checks = []
-    for multiplier in (1, 3):
-        base = ROOT / f'FileOutput_QuadrantShift_v3_M{multiplier}_D294' / 'Perseus'
-        bfile = base / 'FinalData/BLOSPoints.csv'
-        efile = base / 'FinalData/FinalBLOSResults.csv'
+    saved_rows = json.loads((ROOT / 'Statistics' / 'statistics_summary.json').read_text())
+    for saved in saved_rows:
+        label = saved['dataset']
+        bfile = ROOT / saved['field_source']
+        efile = ROOT / saved['uncertainty_source']
         b = pd.read_csv(bfile, sep='\t')
         e = pd.read_csv(efile, sep='\t').set_index('ID#').loc[b['ID#']]
         values = b['Magnetic_Field(uG)'].to_numpy(float)
@@ -101,19 +103,14 @@ def validate_and_calculate():
         lower = e.TotalLowerBUncertainty.to_numpy(float)
         sigma = (upper + lower) / 2
         valid = np.isfinite(values) & np.isfinite(upper) & np.isfinite(lower) & (upper >= 0) & (lower >= 0) & (sigma > 0)
-        label = f'FileOutput_QuadrantShift_v3_M{multiplier}_D294/Perseus'
         for group in ('all_signed', 'positive', 'negative', 'absolute_all'):
             rows.append(calculate(label, group, values, valid, sigma))
         checks.append({
             'run': label,
-            'distance_pc': 294,
-            'on_multiplier': multiplier,
-            'reference_count': len(pd.read_csv(base / 'FinalData/SelectedRefPoints.csv', sep='\t')),
             'blos_count': len(b),
             'valid_error_count': int(valid.sum()),
             'positive_count': int((values > 0).sum()),
             'negative_count': int((values < 0).sum()),
-            'quadrants': '[1, 2, 6, 1]',
         })
     calculated = pd.DataFrame(rows)
     existing = pd.read_csv(ROOT / 'Statistics' / 'statistics_summary.csv')
@@ -125,7 +122,7 @@ def validate_and_calculate():
         right = merged[f'{column}_csv'].to_numpy(float)
         np.testing.assert_allclose(left, right, rtol=1e-10, atol=1e-10,
                                    err_msg=f'Statistics mismatch in {column}')
-    assert len(merged) == len(calculated) == 8
+    assert len(merged) == len(calculated) == len(saved_rows) * 4
     return calculated, pd.DataFrame(checks)
 
 
@@ -138,13 +135,9 @@ def fmt(value, error=None):
 def write_report(rows, checks):
     OUT.parent.mkdir(exist_ok=True)
     with PdfPages(OUT) as pdf:
-        fig = plt.figure(figsize=(11.7, 8.3))
-        fig.suptitle('Quadrant-weighted BLOS statistics', fontsize=18, y=0.96)
-        fig.text(0.05, 0.91, 'Perseus, distance 294 pc; quadrant intersection shifted to the filtered-reference median; '
-                 'minimum one reference per quadrant.', fontsize=10)
         table_rows = []
         for _, r in rows.iterrows():
-            run = 'M1' if '_M1_' in r.dataset else 'M3'
+            run = r.dataset.replace('FileOutput_', '')
             table_rows.append([
                 run, r.field_group, str(int(r.n_sources)),
                 f'{r.min_B_uG:.1f} to {r.max_B_uG:.1f}',
@@ -153,55 +146,47 @@ def write_report(rows, checks):
                 fmt(r.error_weighted_mean_uG, r.error_weighted_mean_error_uG),
                 fmt(r.error_weighted_median_uG, r.error_weighted_median_error_uG),
             ])
-        ax = fig.add_axes([0.03, 0.08, 0.94, 0.78])
-        ax.axis('off')
-        table = ax.table(
-            cellText=table_rows,
-            colLabels=['Run', 'Field group', 'N', 'Range (µG)', 'Mean ± error',
-                       'Median ± error', 'Weighted mean ± error', 'Weighted median ± error'],
-            cellLoc='center', colLoc='center', loc='upper center',
-            colWidths=[0.06, 0.13, 0.05, 0.17, 0.15, 0.15, 0.16, 0.17])
-        table.auto_set_font_size(False)
-        table.set_fontsize(8)
-        table.scale(1, 1.8)
-        for cell in table.get_celld().values():
-            cell.set_edgecolor('#999999')
-        for (row, _), cell in table.get_celld().items():
-            if row != 0:
-                continue
-            cell.set_facecolor('#d9eaf7')
-            cell.set_text_props(weight='bold')
-        pdf.savefig(fig, bbox_inches='tight')
-        plt.close(fig)
+        headers = ['Dataset', 'Field group', 'N', 'Range (µG)', 'Mean ± error',
+                   'Median ± error', 'Weighted mean ± error', 'Weighted median ± error']
+        for start in range(0, len(table_rows), 16):
+            page_rows = table_rows[start:start + 16]
+            fig = plt.figure(figsize=(11.7, 8.3))
+            page = start // 16 + 1
+            pages = (len(table_rows) + 15) // 16
+            fig.suptitle(f'BLOS statistics — all result datasets ({page}/{pages})', fontsize=18, y=0.96)
+            fig.text(0.05, 0.91, 'All remaining pipeline outputs; values verified against their raw BLOS and uncertainty tables.', fontsize=10)
+            ax = fig.add_axes([0.02, 0.08, 0.96, 0.78])
+            ax.axis('off')
+            table = ax.table(cellText=page_rows, colLabels=headers, cellLoc='center', colLoc='center',
+                             loc='upper center', colWidths=[0.27, 0.12, 0.04, 0.14, 0.12, 0.12, 0.12, 0.13])
+            table.auto_set_font_size(False); table.set_fontsize(7); table.scale(1, 1.7)
+            for cell in table.get_celld().values(): cell.set_edgecolor('#999999')
+            for (row, _), cell in table.get_celld().items():
+                if row == 0:
+                    cell.set_facecolor('#d9eaf7'); cell.set_text_props(weight='bold')
+            pdf.savefig(fig, bbox_inches='tight'); plt.close(fig)
 
         fig = plt.figure(figsize=(11.7, 8.3))
         fig.suptitle('Validation and interpretation', fontsize=18, y=0.95)
-        ax = fig.add_axes([0.07, 0.46, 0.86, 0.38])
-        ax.axis('off')
-        check_rows = [[r.run.split('/')[0].replace('FileOutput_QuadrantShift_v3_', ''),
-                       str(r.distance_pc), str(r.on_multiplier), str(r.reference_count),
-                       str(r.blos_count), str(r.valid_error_count),
-                       f'{r.positive_count}/{r.negative_count}', r.quadrants]
+        ax = fig.add_axes([0.04, 0.40, 0.92, 0.46]); ax.axis('off')
+        check_rows = [[r.run.replace('FileOutput_', ''), str(r.blos_count),
+                       str(r.valid_error_count), f'{r.positive_count}/{r.negative_count}']
                       for _, r in checks.iterrows()]
-        t = ax.table(cellText=check_rows,
-                     colLabels=['Run', 'pc', 'Multiplier', 'References', 'BLOS',
-                                'Valid errors', '+ / −', 'Quadrants'],
+        t = ax.table(cellText=check_rows, colLabels=['Dataset', 'BLOS', 'Valid errors', '+ / −'],
                      cellLoc='center', colLoc='center', loc='upper center',
-                     colWidths=[0.18, 0.08, 0.11, 0.13, 0.10, 0.13, 0.10, 0.15])
-        t.auto_set_font_size(False); t.set_fontsize(10); t.scale(1, 1.8)
+                     colWidths=[0.65, 0.10, 0.13, 0.12])
+        t.auto_set_font_size(False); t.set_fontsize(8); t.scale(1, 1.35)
         for cell in t.get_celld().values(): cell.set_edgecolor('#999999')
         for (row, _), cell in t.get_celld().items():
-            if row != 0:
-                continue
-            cell.set_facecolor('#d9eaf7'); cell.set_text_props(weight='bold')
+            if row == 0:
+                cell.set_facecolor('#d9eaf7'); cell.set_text_props(weight='bold')
         notes = (
-            'Checks passed: BLOS IDs and values match the uncertainty tables; all CSV values were recomputed from the raw catalogs.\n\n'
+            'Checks passed: BLOS IDs and values match the uncertainty tables; all 76 CSV rows were recomputed from the raw catalogs.\n\n'
             'Mean and median errors are bootstrap standard deviations from 10,000 source resamples. '
             'Error-weighted values use w = 1/sigma_B², where sigma_B is the average of the upper and lower reported BLOS errors.\n\n'
             'The absolute_all group uses |BLOS|. The signed, positive, and negative groups retain the sign. '
-            'The range is the minimum-to-maximum value within each group.\n\n'
-            'The v3 runs use quadrant weighting and the corrected quadrant-enforcement selection. '
-            'Their minimum reference separation is set to 0 arcmin so the sparse data can populate all four quadrants.'
+            'The range is the minimum-to-maximum value within each group. The error-weighted count excludes invalid or non-positive uncertainty widths.\n\n'
+            'The two QuadrantShift_v3 runs use quadrant weighting and corrected quadrant enforcement; their minimum reference separation is 0 arcmin.'
         )
         fig.text(0.07, 0.08, notes, fontsize=10, va='bottom', wrap=True, linespacing=1.5)
         pdf.savefig(fig, bbox_inches='tight')
