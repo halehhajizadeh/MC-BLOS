@@ -66,13 +66,16 @@ def make_map(label, bfile, zeeman, region):
                    zorder=5, label='Off points')
 
     zx, zy = region.wcs.wcs_world2pix(zeeman['Ra(deg)'].to_numpy(), zeeman['Dec(deg)'].to_numpy(), 0)
-    _, zsize = putil.p2RGB(np.abs(zeeman['B'].to_numpy()), size_cap=1000, scale_factor=0.5, alpha=0.9)
-    ax.scatter(zx, zy, s=np.asarray(zsize) * 3, facecolor='deepskyblue', marker='*', edgecolors='white',
+    # Zeeman pointings are comparison measurements, so use one fixed symbol
+    # size rather than scaling them with their measured field strengths.
+    ax.scatter(zx, zy, s=150, facecolor='deepskyblue', marker='*', edgecolors='white',
                linewidth=0.7, zorder=20, label='OH Zeeman measurements')
+    label_offsets = {'B1': (8, 10), 'L1448-CO': (-58, 12), 'L1448-COe': (10, -22)}
     for _, row in zeeman.iterrows():
         px, py = region.wcs.wcs_world2pix(row['Ra(deg)'], row['Dec(deg)'], 0)
-        ax.annotate(row['Region'], (px, py), xytext=(5, 5), textcoords='offset points',
-                    fontsize=9, color='navy', zorder=21)
+        ax.annotate(row['Region'], (px, py), xytext=label_offsets.get(row['Region'], (8, 8)),
+                    textcoords='offset points', fontsize=9, color='navy', zorder=21,
+                    bbox=dict(boxstyle='round,pad=0.15', facecolor='white', alpha=0.7, edgecolor='none'))
 
     ax.set_xlim(region.xmin, region.xmax); ax.set_ylim(region.ymin, region.ymax)
     ra_axis, dec_axis = ax.coords[0], ax.coords[1]
